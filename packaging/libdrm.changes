@@ -1,0 +1,15 @@
+* Wed Jun 26 2013 Anas Nashif <anas.nashif@intel.com> submit/tizen/20130509.181023@2f4c082
+- Fixed groups, dependencies and rpmlint warnings
+
+* Sun Mar 24 2013 Anas Nashif <anas.nashif@intel.com> libdrm-2.4.42@d72da55
+- Do not build slp module
+
+* Mon Mar 18 2013 Anas Nashif <anas.nashif@intel.com> submit/trunk/20130211.161736@3627b63
+- Fixed package groups
+
+* Mon Feb 11 2013 Anas Nashif <anas.nashif@intel.com> submit/trunk/20130211.160627@4aa3f86
+- readd baselibs.conf
+
+* Mon Feb 11 2013 Anas Nashif <anas.nashif@intel.com> libdrm-2.4.42@ade64c1
+- Update to 2.4.42
+
