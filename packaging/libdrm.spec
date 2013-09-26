@@ -95,6 +95,7 @@ cp %{SOURCE1001} .
 %license COPYING
 %{_libdir}/libdrm.so.*
 %{_libdir}/libdrm_exynos.so.*
+%{_libdir}/libdrm_vigs.so.*
 
 %files tools
 %manifest %{name}.manifest
@@ -128,6 +129,7 @@ cp %{SOURCE1001} .
 %endif
 %{_libdir}/libkms.so
 %{_libdir}/libdrm_exynos.so
+%{_libdir}/libdrm_vigs.so
 %{_libdir}/pkgconfig/*
 
 %files -n libkms

@@ -90,6 +90,10 @@ if HAVE_ETNAVIV
 ETNAVIV_SUBDIR = etnaviv
 endif
 
+if HAVE_VIGS
+VIGS_SUBDIR = vigs
+endif
+
 if BUILD_MANPAGES
 if HAVE_MANPAGES_STYLESHEET
 MAN_SUBDIR = man
@@ -109,6 +113,7 @@ SUBDIRS = \
 	$(TEGRA_SUBDIR) \
 	$(VC4_SUBDIR) \
 	$(ETNAVIV_SUBDIR) \
+	$(VIGS_SUBDIR) \
 	data \
 	tests \
 	$(MAN_SUBDIR)

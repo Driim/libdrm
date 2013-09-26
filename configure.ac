@@ -151,6 +151,11 @@ AC_ARG_ENABLE(etnaviv-experimental-api,
 	      [Enable support for etnaviv's experimental API (default: disabled)]),
 	      [ETNAVIV=$enableval], [ETNAVIV=no])
 
+AC_ARG_ENABLE(vigs,
+	     AS_HELP_STRING([--disable-vigs],
+	     [Enable support for VIGS's API (default: enabled)]),
+	     [VIGS=$enableval], [VIGS=yes])
+
 AC_ARG_ENABLE(install-test-programs,
 		  AS_HELP_STRING([--enable-install-test-programs],
 		  [Install test programs (default: no)]),
@@ -450,6 +455,13 @@ fi
 
 AM_CONDITIONAL(HAVE_ETNAVIV, [test "x$ETNAVIV" = xyes])
 
+AM_CONDITIONAL(HAVE_VIGS, [test "x$VIGS" = xyes])
+if test "x$VIGS" = xyes; then
+	AC_DEFINE(HAVE_VIGS, 1, [Have VIGS support])
+else
+	AC_DEFINE(HAVE_VIGS, 0)
+fi
+
 AM_CONDITIONAL(HAVE_INSTALL_TESTS, [test "x$INSTALL_TESTS" = xyes])
 
 AC_ARG_ENABLE([cairo-tests],
@@ -562,6 +574,8 @@ AC_CONFIG_FILES([
 	vc4/libdrm_vc4.pc
 	etnaviv/Makefile
 	etnaviv/libdrm_etnaviv.pc
+	vigs/Makefile
+	vigs/libdrm_vigs.pc
 	tests/Makefile
 	tests/modeprint/Makefile
 	tests/modetest/Makefile
@@ -595,4 +609,5 @@ echo "  Freedreno API  $FREEDRENO (kgsl: $FREEDRENO_KGSL)"
 echo "  Tegra API      $TEGRA"
 echo "  VC4 API        $VC4"
 echo "  Etnaviv API    $ETNAVIV"
+echo "  VIGS API       $VIGS"
 echo ""
