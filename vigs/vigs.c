@@ -282,6 +282,7 @@ int vigs_drm_surface_create(struct vigs_drm_device *dev,
                             uint32_t height,
                             uint32_t stride,
                             uint32_t format,
+                            int scanout,
                             struct vigs_drm_surface **sfc)
 {
     struct vigs_drm_surface_impl *sfc_impl;
@@ -291,6 +292,7 @@ int vigs_drm_surface_create(struct vigs_drm_device *dev,
         .height = height,
         .stride = stride,
         .format = format,
+        .scanout = scanout,
     };
     int ret;
 
@@ -318,6 +320,7 @@ int vigs_drm_surface_create(struct vigs_drm_device *dev,
     sfc_impl->base.height = height;
     sfc_impl->base.stride = stride;
     sfc_impl->base.format = format;
+    sfc_impl->base.scanout = scanout;
     sfc_impl->base.id = req.id;
 
     *sfc = &sfc_impl->base;
@@ -377,6 +380,7 @@ int vigs_drm_surface_open(struct vigs_drm_device *dev,
     sfc_impl->base.height = info_req.height;
     sfc_impl->base.stride = info_req.stride;
     sfc_impl->base.format = info_req.format;
+    sfc_impl->base.scanout = info_req.scanout;
     sfc_impl->base.id = info_req.id;
 
     *sfc = &sfc_impl->base;
