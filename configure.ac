@@ -590,6 +590,8 @@ AC_CONFIG_FILES([
 	tests/nouveau/Makefile
 	tests/etnaviv/Makefile
 	tests/util/Makefile
+	tests/ipptest/Makefile
+	tests/rottest/Makefile
 	man/Makefile
 	libdrm.pc])
 AC_OUTPUT

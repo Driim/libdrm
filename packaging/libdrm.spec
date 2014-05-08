@@ -113,6 +113,8 @@ cp %{SOURCE1001} .
 %{_bindir}/exynos_fimg2d_event
 %{_bindir}/exynos_fimg2d_perf
 %{_bindir}/exynos_fimg2d_test
+%{_bindir}/ipptest
+%{_bindir}/rottest
 
 %files devel
 %manifest %{name}.manifest

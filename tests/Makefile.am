@@ -16,6 +16,8 @@ endif
 
 if HAVE_EXYNOS
 SUBDIRS += exynos
+SUBDIRS += ipptest
+SUBDIRS += rottest
 endif
 
 if HAVE_TEGRA
