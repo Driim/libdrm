@@ -887,6 +887,63 @@ drm_public int drmModeCrtcSetGamma(int fd, uint32_t crtc_id, uint32_t size,
 	return DRM_IOCTL(fd, DRM_IOCTL_MODE_SETGAMMA, &l);
 }
 
+#ifdef TIZEN_USE_USER_HANDLER
+#include "libdrm_lists.h"
+#include <stdlib.h>
+
+struct drm_user_handler_data {
+	int fd;
+	drm_user_handler handler;
+	drmMMListHead link;
+};
+
+static drmMMListHead user_handler_list;
+static int user_handler_list_init = 0;
+
+drm_public int
+drmAddUserHandler(int fd, drm_user_handler handler)
+{
+	struct drm_user_handler_data *data = malloc(sizeof(struct drm_user_handler_data));
+
+	if (!data)
+		return -1;
+
+	data->fd = fd;
+	data->handler = handler;
+
+	if (!user_handler_list_init)
+	{
+		user_handler_list_init = 1;
+		DRMINITLISTHEAD(&user_handler_list);
+	}
+
+	DRMLISTADDTAIL(&data->link, &user_handler_list);
+
+	return 0;
+}
+
+drm_public void
+drmRemoveUserHandler(int fd, drm_user_handler handler)
+{
+	struct drm_user_handler_data *data;
+
+	if (!user_handler_list_init)
+	{
+		user_handler_list_init = 1;
+		DRMINITLISTHEAD(&user_handler_list);
+	}
+
+	DRMLISTFOREACHENTRY(data, &user_handler_list, link) {
+		if (data->fd == fd && data->handler == handler)
+		{
+			DRMLISTDEL(&data->link);
+			free(data);
+			return;
+		}
+	}
+}
+#endif
+
 drm_public int drmHandleEvent(int fd, drmEventContextPtr evctx)
 {
 	char buffer[1024];
@@ -947,6 +1004,22 @@ drm_public int drmHandleEvent(int fd, drmEventContextPtr evctx)
 							seq->user_data);
 			break;
 		default:
+#ifdef TIZEN_USE_USER_HANDLER
+			{
+				struct drm_user_handler_data *data;
+				int ret = -1;
+				if (!user_handler_list_init)
+					break;
+				DRMLISTFOREACHENTRY(data, &user_handler_list, link) {
+					if (data->handler)
+					{
+						ret = data->handler(e);
+						if (ret == 0)
+							break;
+					}
+				}
+			}
+#endif
 			break;
 		}
 		i += e->length;
