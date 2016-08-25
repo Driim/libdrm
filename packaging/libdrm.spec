@@ -70,6 +70,7 @@ cp %{SOURCE1001} .
         --disable-nouveau \
         --disable-freedreno \
         --enable-exynos-experimental-api \
+        --enable-nexell \
         --enable-install-test-programs \
         --disable-cairo-tests
 
@@ -96,6 +97,7 @@ cp %{SOURCE1001} .
 %{_libdir}/libdrm.so.*
 %{_libdir}/libdrm_exynos.so.*
 %{_libdir}/libdrm_vigs.so.*
+%{_libdir}/libdrm_nexell.so.*
 
 %files tools
 %manifest %{name}.manifest
@@ -124,6 +126,8 @@ cp %{SOURCE1001} .
 %{_includedir}/libkms/*.h
 %dir %{_includedir}/exynos
 %{_includedir}/exynos/*.h
+%dir %{_includedir}/nexell
+%{_includedir}/nexell/*.h
 %{_includedir}/*.h
 %{_libdir}/libdrm.so
 %ifarch i586 i686 %ix86 x86_64
@@ -131,6 +135,7 @@ cp %{SOURCE1001} .
 %endif
 %{_libdir}/libkms.so
 %{_libdir}/libdrm_exynos.so
+%{_libdir}/libdrm_nexell.so
 %{_libdir}/libdrm_vigs.so
 %{_libdir}/pkgconfig/*
 

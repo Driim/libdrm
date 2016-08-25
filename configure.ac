@@ -156,6 +156,11 @@ AC_ARG_ENABLE(vigs,
 	     [Enable support for VIGS's API (default: enabled)]),
 	     [VIGS=$enableval], [VIGS=yes])
 
+AC_ARG_ENABLE(nexell,
+	      AS_HELP_STRING([--enable-nexell],
+	      [Enable support for nexell (default: disabled)]),
+	      [NEXELL=$enableval], [NEXELL=no])
+
 AC_ARG_ENABLE(install-test-programs,
 		  AS_HELP_STRING([--enable-install-test-programs],
 		  [Install test programs (default: no)]),
@@ -462,6 +467,13 @@ else
 	AC_DEFINE(HAVE_VIGS, 0)
 fi
 
+AM_CONDITIONAL(HAVE_NEXELL, [test "x$NEXELL" = xyes])
+if test "x$NEXELL" = xyes; then
+	AC_DEFINE(HAVE_NEXELL, 1, [Have NEXELL support])
+else
+	AC_DEFINE(HAVE_NEXELL, 0)
+fi
+
 AM_CONDITIONAL(HAVE_INSTALL_TESTS, [test "x$INSTALL_TESTS" = xyes])
 
 AC_ARG_ENABLE([cairo-tests],
@@ -576,6 +588,8 @@ AC_CONFIG_FILES([
 	etnaviv/libdrm_etnaviv.pc
 	vigs/Makefile
 	vigs/libdrm_vigs.pc
+	nexell/Makefile
+	nexell/libdrm_nexell.pc
 	tests/Makefile
 	tests/modeprint/Makefile
 	tests/modetest/Makefile
@@ -612,4 +626,6 @@ echo "  Tegra API      $TEGRA"
 echo "  VC4 API        $VC4"
 echo "  Etnaviv API    $ETNAVIV"
 echo "  VIGS API       $VIGS"
+echo "  NEXELL API     $NEXELL"
+
 echo ""

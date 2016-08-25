@@ -94,6 +94,10 @@ if HAVE_VIGS
 VIGS_SUBDIR = vigs
 endif
 
+if HAVE_NEXELL
+NEXELL_SUBDIR = nexell
+endif
+
 if BUILD_MANPAGES
 if HAVE_MANPAGES_STYLESHEET
 MAN_SUBDIR = man
@@ -114,6 +118,7 @@ SUBDIRS = \
 	$(VC4_SUBDIR) \
 	$(ETNAVIV_SUBDIR) \
 	$(VIGS_SUBDIR) \
+	$(NEXELL_SUBDIR) \
 	data \
 	tests \
 	$(MAN_SUBDIR)
