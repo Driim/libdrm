@@ -499,7 +499,7 @@ int main(int argc, char **argv)
 				sum += usec[i];
 			}
 			printf("fimc : result files are in %s\n", RESULT_PATH);
-			printf("avg : [%d]\n", sum / i);
+			printf("avg : [%d]\n", (i ? sum / i : 0));
 		}
 		getchar();
 	}
