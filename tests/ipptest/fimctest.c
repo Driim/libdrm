@@ -158,6 +158,9 @@ static void dump_props(drmModeConnector *connector)
 
 	for (i = 0; i < connector->count_props; i++) {
 		props = drmModeGetProperty(fd, connector->props[i]);
+		if (!props)
+			continue;
+
 		printf("\t%s, flags %d\n", props->name, props->flags);
 		drmModeFreeProperty(props);
 	}
