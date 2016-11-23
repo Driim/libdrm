@@ -444,7 +444,10 @@ static int exynos_drm_ipp_set_property(int fd,
 		property->config[EXYNOS_DRM_OPS_DST].flip = EXYNOS_DRM_FLIP_NONE;
 		property->config[EXYNOS_DRM_OPS_DST].degree = degree;
 		property->config[EXYNOS_DRM_OPS_DST].fmt = DRM_FORMAT_XRGB8888;
-		if (property->config[EXYNOS_DRM_OPS_DST].degree == EXYNOS_DRM_DEGREE_90) {
+		if (property->config[EXYNOS_DRM_OPS_DST].degree ==
+				EXYNOS_DRM_DEGREE_90 ||
+				property->config[EXYNOS_DRM_OPS_DST].degree ==
+				EXYNOS_DRM_DEGREE_270) {
 			dst_sz.hsize = def_sz->vsize;
 			dst_sz.vsize = def_sz->hsize;
 
@@ -460,7 +463,10 @@ static int exynos_drm_ipp_set_property(int fd,
 		property->config[EXYNOS_DRM_OPS_SRC].flip = EXYNOS_DRM_FLIP_NONE;
 		property->config[EXYNOS_DRM_OPS_SRC].degree = EXYNOS_DRM_DEGREE_0;
 		property->config[EXYNOS_DRM_OPS_SRC].fmt = DRM_FORMAT_YUV444;
-		if (property->config[EXYNOS_DRM_OPS_SRC].degree == EXYNOS_DRM_DEGREE_90) {
+		if (property->config[EXYNOS_DRM_OPS_SRC].degree ==
+				EXYNOS_DRM_DEGREE_90 ||
+				property->config[EXYNOS_DRM_OPS_SRC].degree ==
+				EXYNOS_DRM_DEGREE_270) {
 			src_sz.hsize = def_sz->vsize;
 			src_sz.vsize = def_sz->hsize;
 
@@ -474,7 +480,10 @@ static int exynos_drm_ipp_set_property(int fd,
 		property->config[EXYNOS_DRM_OPS_DST].flip = EXYNOS_DRM_FLIP_NONE;
 		property->config[EXYNOS_DRM_OPS_DST].degree = degree;
 		property->config[EXYNOS_DRM_OPS_DST].fmt = DRM_FORMAT_XRGB8888;
-		if (property->config[EXYNOS_DRM_OPS_DST].degree == EXYNOS_DRM_DEGREE_90) {
+		if (property->config[EXYNOS_DRM_OPS_DST].degree ==
+				EXYNOS_DRM_DEGREE_90 ||
+				property->config[EXYNOS_DRM_OPS_DST].degree ==
+				EXYNOS_DRM_DEGREE_270) {
 			dst_sz.hsize = def_sz->vsize;
 			dst_sz.vsize = def_sz->hsize;
 
