@@ -27,6 +27,8 @@ extern struct kms_bo *util_kms_gem_create_mmap(struct kms_driver *kms,
 			unsigned int format, unsigned int width,
 			unsigned int height, unsigned int handles[4],
 			unsigned int pitches[4], unsigned int offsets[4]);
+extern void fill_smpte_rgb32(unsigned char *mem, unsigned int width,
+			unsigned int height, unsigned int stride);
 extern void util_draw_buffer(void *addr, unsigned int stripe,
 				unsigned int width, unsigned int height,
 				unsigned int stride, unsigned int size);

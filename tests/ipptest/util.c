@@ -307,6 +307,75 @@ struct kms_bo *util_kms_gem_create_mmap(struct kms_driver *kms,
 	return bo;
 }
 
+#define MAKE_RGBA(rgb, r, g, b, a) \
+	((((r) >> (8 - (rgb)->red.length)) << (rgb)->red.offset) | \
+	 (((g) >> (8 - (rgb)->green.length)) << (rgb)->green.offset) | \
+	 (((b) >> (8 - (rgb)->blue.length)) << (rgb)->blue.offset) | \
+	 (((a) >> (8 - (rgb)->alpha.length)) << (rgb)->alpha.offset))
+
+void fill_smpte_rgb32(unsigned char *mem, unsigned int width,
+			unsigned int height, unsigned int stride)
+{
+	struct rgb_info rgb_status = { {8, 16}, {8, 8}, {8, 0}, {0, 0} };
+	const struct rgb_info *rgb = &rgb_status;
+
+	const uint32_t colors_top[] = {
+		MAKE_RGBA(rgb, 192, 192, 192, 255),	/* grey */
+		MAKE_RGBA(rgb, 192, 192, 0, 255),	/* yellow */
+		MAKE_RGBA(rgb, 0, 192, 192, 255),	/* cyan */
+		MAKE_RGBA(rgb, 0, 192, 0, 255),		/* green */
+		MAKE_RGBA(rgb, 192, 0, 192, 255),	/* magenta */
+		MAKE_RGBA(rgb, 192, 0, 0, 255),		/* red */
+		MAKE_RGBA(rgb, 0, 0, 192, 255),		/* blue */
+	};
+	const uint32_t colors_middle[] = {
+		MAKE_RGBA(rgb, 0, 0, 192, 255),		/* blue */
+		MAKE_RGBA(rgb, 19, 19, 19, 255),	/* black */
+		MAKE_RGBA(rgb, 192, 0, 192, 255),	/* magenta */
+		MAKE_RGBA(rgb, 19, 19, 19, 255),	/* black */
+		MAKE_RGBA(rgb, 0, 192, 192, 255),	/* cyan */
+		MAKE_RGBA(rgb, 19, 19, 19, 255),	/* black */
+		MAKE_RGBA(rgb, 192, 192, 192, 255),	/* grey */
+	};
+	const uint32_t colors_bottom[] = {
+		MAKE_RGBA(rgb, 0, 33, 76, 255),		/* in-phase */
+		MAKE_RGBA(rgb, 255, 255, 255, 255),	/* super white */
+		MAKE_RGBA(rgb, 50, 0, 106, 255),	/* quadrature */
+		MAKE_RGBA(rgb, 19, 19, 19, 255),	/* black */
+		MAKE_RGBA(rgb, 9, 9, 9, 255),		/* 3.5% */
+		MAKE_RGBA(rgb, 19, 19, 19, 255),	/* 7.5% */
+		MAKE_RGBA(rgb, 29, 29, 29, 255),	/* 11.5% */
+		MAKE_RGBA(rgb, 19, 19, 19, 255),	/* black */
+	};
+	unsigned int x;
+	unsigned int y;
+
+	for (y = 0; y < height * 6 / 9; ++y) {
+		for (x = 0; x < width; ++x)
+			((uint32_t *)mem)[x] = colors_top[x * 7 / width];
+		mem += stride;
+	}
+
+	for (; y < height * 7 / 9; ++y) {
+		for (x = 0; x < width; ++x)
+			((uint32_t *)mem)[x] = colors_middle[x * 7 / width];
+		mem += stride;
+	}
+
+	for (; y < height; ++y) {
+		for (x = 0; x < width * 5 / 7; ++x)
+			((uint32_t *)mem)[x] =
+				colors_bottom[x * 4 / (width * 5 / 7)];
+		for (; x < width * 6 / 7; ++x)
+			((uint32_t *)mem)[x] =
+				colors_bottom[(x - width * 5 / 7) * 3
+					      / (width / 7) + 4];
+		for (; x < width; ++x)
+			((uint32_t *)mem)[x] = colors_bottom[7];
+		mem += stride;
+	}
+}
+
 void util_draw_buffer(void *addr, unsigned int stripe,
 				unsigned int width, unsigned int height,
 				unsigned int stride, unsigned int size)
@@ -343,7 +412,7 @@ void util_draw_buffer_yuv(void **addr, unsigned int width, unsigned int height)
 	v422 = malloc(width * (height / 2));
 
 	/* Get RGB fmt Image */
-	util_draw_buffer(img_ptr, 1, width, height, width * 4, 0);
+	fill_smpte_rgb32(img_ptr, width, height, width * 4);
 
 	/* RGB888 to YUV422 Conversion */
 	i = 0;

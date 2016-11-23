@@ -709,8 +709,8 @@ void fimc_m2m_set_mode(struct device *dev, struct connector *c, int count,
 		util_draw_buffer_yuv(usr_addr1,
 				dev->mode.width, dev->mode.height);
 	else
-		util_draw_buffer(usr_addr1[0], 1, dev->mode.width,
-				dev->mode.height, dev->mode.width * 4, 0);
+		fill_smpte_rgb32(usr_addr1[0], dev->mode.width,
+				dev->mode.height, dev->mode.width * 4);
 
 	/*For destination buffer */
 	bo_dst = util_kms_gem_create_mmap(dev->kms, pipe.fourcc,
