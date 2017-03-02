@@ -837,6 +837,16 @@ void fimc_m2m_set_mode(struct device *dev, struct connector *c, int count,
 			goto err_ipp_quque_close;
 		}
 
+		/* Set crtc */
+		ret = drmModeSetCrtc(dev->fd, pipe.crtc->crtc->crtc_id,
+					fb_id_dst, 0, 0, pipe.con_ids,
+					pipe.num_cons, pipe.mode);
+		if (ret) {
+			fprintf(stderr, "failed to set crtc: %s\n",
+							strerror(errno));
+			goto err_ipp_quque_close;
+		}
+
 		j = 0;
 		while (1) {
 			struct timeval timeout = {.tv_sec = 3, .tv_usec = 0};
