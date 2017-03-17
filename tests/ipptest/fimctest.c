@@ -285,7 +285,6 @@ void connector_find_mode(struct connector *c)
 		if (!connector) {
 			fprintf(stderr, "could not get connector %i: %s\n",
 				resources->connectors[i], strerror(errno));
-			drmModeFreeConnector(connector);
 			continue;
 		}
 
@@ -324,7 +323,6 @@ void connector_find_mode(struct connector *c)
 		if (!c->encoder) {
 			fprintf(stderr, "could not get encoder %i: %s\n",
 				resources->encoders[i], strerror(errno));
-			drmModeFreeEncoder(c->encoder);
 			continue;
 		}
 
