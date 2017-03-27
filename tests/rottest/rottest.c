@@ -195,8 +195,10 @@ static void dump_connectors(void)
 							connector->encoders[j]);
 		printf("\n");
 
-		if (!connector->count_modes)
+		if (!connector->count_modes) {
+			drmModeFreeConnector(connector);
 			continue;
+		}
 
 		printf("  modes:\n");
 		printf("  name refresh (Hz) hdisp hss hse htot vdisp "
