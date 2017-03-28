@@ -147,6 +147,9 @@ static int rotator_set_mode_property(struct connector *c, int count,
 		*width += c[i].mode->hdisplay;
 		if (*height < c[i].mode->vdisplay)
 			*height = c[i].mode->vdisplay;
+
+		drmModeFreeModeInfo(c[i].mode);
+		c[i].mode = NULL;
 	}
 
 	*stride = *width * 4;

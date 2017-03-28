@@ -13,7 +13,6 @@ struct connector {
 	uint32_t id;
 	char mode_str[64];
 	drmModeModeInfo *mode;
-	drmModeEncoder *encoder;
 	int crtc;
 	unsigned int fb_id[2], current_fb_id;
 	struct timeval start;

@@ -274,7 +274,10 @@ static void dump_framebuffers(void)
 
 void connector_find_mode(struct connector *c)
 {
+	drmModeModeInfo *mode = NULL;
 	drmModeConnector *connector;
+	drmModeEncoder *encoder;
+	uint32_t encoder_id = 0;
 	int i, j;
 
 	/* First, find the connector & mode */
@@ -299,41 +302,55 @@ void connector_find_mode(struct connector *c)
 		}
 
 		for (j = 0; j < connector->count_modes; j++) {
-			c->mode = &connector->modes[j];
-			if (!strcmp(c->mode->name, c->mode_str))
+			if (!strncmp(connector->modes[j].name, c->mode_str,
+			    DRM_DISPLAY_MODE_LEN)) {
+				mode = drmMalloc(sizeof(*mode));
+				if (!mode)
+					break;
+
+				memcpy(mode, &connector->modes[j], sizeof(*mode));
+				encoder_id = connector->encoder_id;
 				break;
+			}
 		}
 
-		/* Found it, break out */
-		if (c->mode)
-			break;
-
 		drmModeFreeConnector(connector);
+
+		/* Found it, break out */
+		if (mode)
+			break;
 	}
 
-	if (!c->mode) {
+	if (!mode) {
 		fprintf(stderr, "failed to find mode \"%s\"\n", c->mode_str);
 		return;
 	}
 
+	c->mode = mode;
+
 	/* Now get the encoder */
 	for (i = 0; i < resources->count_encoders; i++) {
-		c->encoder = drmModeGetEncoder(fd, resources->encoders[i]);
+		uint32_t curr_encoder_id, crtc_id;
 
-		if (!c->encoder) {
+		encoder = drmModeGetEncoder(fd, resources->encoders[i]);
+
+		if (!encoder) {
 			fprintf(stderr, "could not get encoder %i: %s\n",
 				resources->encoders[i], strerror(errno));
 			continue;
 		}
 
-		if (c->encoder->encoder_id  == connector->encoder_id)
+		curr_encoder_id = encoder->encoder_id;
+		crtc_id = encoder->crtc_id;
+
+		drmModeFreeEncoder(encoder);
+
+		if (curr_encoder_id == encoder_id) {
+			if (c->crtc == -1)
+				c->crtc = crtc_id;
 			break;
-
-		drmModeFreeEncoder(c->encoder);
+		}
 	}
-
-	if (c->crtc == -1)
-		c->crtc = c->encoder->crtc_id;
 }
 
 extern char *optarg;

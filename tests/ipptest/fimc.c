@@ -981,6 +981,9 @@ void fimc_wb_set_mode(struct connector *c, int count, int page_flip,
 		if (c[i].mode == NULL) continue;
 		width += c[i].mode->hdisplay;
 		if (height < c[i].mode->vdisplay) height = c[i].mode->vdisplay;
+
+		drmModeFreeModeInfo(c[i].mode);
+		c[i].mode = NULL;
 	}
 	stride = width * 4;
 
