@@ -368,7 +368,7 @@ int main(int argc, char **argv)
 	int degree = EXYNOS_DRM_DEGREE_180;
 	int display = IPP_CMD_M2M_FILE;
 	int test_vsync = 0;
-	char *modules[] = {"exynos", "i915", "radeon", "nouveau", "vmwgfx"};
+	const char *module = "exynos";
 	char *modeset = NULL;
 	int i, count = 0;
 	struct connector con_args[2];
@@ -429,22 +429,13 @@ int main(int argc, char **argv)
 	if (argc == 1)
 		encoders = connectors = crtcs = modes = framebuffers = 1;
 
-	for (i = 0; i < ARRAY_SIZE(modules); i++) {
-		printf("trying to load module %s...", modules[i]);
-		fd = drmOpen(modules[i], NULL);
-		if (fd < 0) {
-			printf("failed.\n");
-		} else {
-			printf("success.\n");
-			dev.fd = fd;
-			break;
-		}
-	}
-
-	if (i == ARRAY_SIZE(modules)) {
-		fprintf(stderr, "failed to load any modules, aborting.\n");
+	fd = drmOpen(module, NULL);
+	if (fd < 0) {
+		fprintf(stderr, "failed to load %s module, aborting.\n", module);
 		return -1;
 	}
+
+	dev.fd = fd;
 
 	dev.resources = get_resources(&dev);
 	if (!dev.resources) {

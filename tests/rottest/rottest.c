@@ -364,7 +364,7 @@ int main(int argc, char **argv)
 {
 	int c, i, count = 0, encoders = 0, connectors = 0, crtcs = 0,
 			framebuffers = 0, test_multiple_buf = 0, test_vsync = 0;
-	char *modules[] = {"exynos", "i915", "radeon", "nouveau", "vmwgfx"};
+	const char *module = "exynos";
 	struct connector con_args[2];
 	
 	opterr = 0;
@@ -413,19 +413,9 @@ int main(int argc, char **argv)
 	if (argc == 1)
 		encoders = connectors = crtcs = modes = framebuffers = 1;
 
-	for (i = 0; i < ARRAY_SIZE(modules); i++) {
-		printf("trying to load module %s...", modules[i]);
-		fd = drmOpen(modules[i], NULL);
-		if (fd < 0)
-			printf("failed.\n");
-		else {
-			printf("success.\n");
-			break;
-		}
-	}
-
-	if (i == ARRAY_SIZE(modules)) {
-		fprintf(stderr, "failed to load any modules, aborting.\n");
+	fd = drmOpen(module, NULL);
+	if (fd < 0) {
+		fprintf(stderr, "failed to load %s module, aborting.\n", module);
 		return -1;
 	}
 
