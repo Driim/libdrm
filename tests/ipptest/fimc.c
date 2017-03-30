@@ -578,7 +578,7 @@ int fimc_event_handler(struct drm_exynos_ipp_queue_buf *src_qbuf,
 	char filename[100];
 	int ret = 0;
 	int src_buf_id, dst_buf_id;
-	static bmp_idx = 0;
+	static int bmp_idx = 0;
 
 	len = read(fd, buffer, sizeof buffer);
 	if (len == 0)
