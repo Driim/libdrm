@@ -369,7 +369,6 @@ int main(int argc, char **argv)
 	int display = IPP_CMD_M2M_FILE;
 	int test_vsync = 0;
 	const char *module = "exynos";
-	char *modeset = NULL;
 	int i, count = 0;
 	struct connector con_args[2];
 
@@ -401,7 +400,6 @@ int main(int argc, char **argv)
 				sscanf(optarg, "%d", &operations);
 			break;
 		case 's':
-			modeset = strdup(optarg);
 			con_args[count].crtc = -1;
 			if (sscanf(optarg, "%d:%64s",
 				   &con_args[count].id,
@@ -487,11 +485,11 @@ int main(int argc, char **argv)
 
 		if (display == IPP_CMD_M2M_FILE) {
 			for (i = 0; i < MAX_LOOP && usec[i] != 0; i++) {
-				printf("[%d] : %d\n", i + 1, usec[i]);
+				printf("[%d] : %ld\n", i + 1, usec[i]);
 				sum += usec[i];
 			}
 			printf("fimc : result files are in %s\n", RESULT_PATH);
-			printf("avg : [%d]\n", (i ? sum / i : 0));
+			printf("avg : [%ld]\n", (i ? sum / i : 0));
 		}
 		getchar();
 	}

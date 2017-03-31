@@ -441,11 +441,11 @@ int main(int argc, char **argv)
 			rotator_1_N_set_mode(con_args, count, test_vsync, usec);
 
 		for (i = 0; i < MAX_LOOP * MAX_BUF; i++) {
-			printf("[%d] : %d\n", i + 1, usec[i]);
+			printf("[%d] : %ld\n", i + 1, usec[i]);
 			sum += usec[i];
 		}
 		printf("rotator : result files are in %s\n", RESULT_PATH);
-		printf("avg : [%d]\n", sum / MAX_LOOP);
+		printf("avg : [%ld]\n", sum / MAX_LOOP);
 		getchar();
 	}
 
