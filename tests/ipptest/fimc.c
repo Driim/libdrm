@@ -662,7 +662,6 @@ void fimc_m2m_set_mode(struct device *dev, struct connector *c, int count,
 	struct drm_exynos_sz def_sz;
 	struct drm_exynos_ipp_queue_buf qbuf1[MAX_BUF], qbuf2[MAX_BUF];
 	struct drm_exynos_gem_create gem1[MAX_BUF], gem2[MAX_BUF];
-	struct exynos_gem_mmap_data mmap1[MAX_BUF], mmap2[MAX_BUF];
 	void *usr_addr1[MAX_BUF], *usr_addr2[MAX_BUF];
 	struct drm_gem_close args;
 	uint32_t handles[4], pitches[4], offsets[4] = {0};
@@ -696,10 +695,10 @@ void fimc_m2m_set_mode(struct device *dev, struct connector *c, int count,
 		if (!bo_src[i])
 			goto err_ipp_src_buff_close;
 
-		mmap1[i].size = gem1[i].size = bo_src[i]->size;
-		mmap1[i].offset = gem1[i].flags = 0;
-		mmap1[i].handle = gem1[i].handle = bo_src[i]->handle;
-		usr_addr1[i] = mmap1[i].addr = bo_src[i]->ptr;
+		gem1[i].size = bo_src[i]->size;
+		gem1[i].flags = 0;
+		gem1[i].handle = bo_src[i]->handle;
+		usr_addr1[i] = bo_src[i]->ptr;
 	}
 
 	/* Create test Image
@@ -719,10 +718,10 @@ void fimc_m2m_set_mode(struct device *dev, struct connector *c, int count,
 	if (!bo_dst)
 		goto err_ipp_src_buff_close;
 
-	mmap2[0].size = gem2[0].size = bo_dst->size;
-	mmap2[0].offset = gem2[0].flags = 0;
-	mmap2[0].handle = gem2[0].handle = bo_dst->handle;
-	usr_addr2[0] = mmap2[0].addr = bo_dst->ptr;
+	gem2[0].size = bo_dst->size;
+	gem2[0].flags = 0;
+	gem2[0].handle = bo_dst->handle;
+	usr_addr2[0] = bo_dst->ptr;
 
 	def_sz.hsize = dev->mode.width;
 	def_sz.vsize = dev->mode.height;
@@ -942,7 +941,7 @@ err_ipp_quque_close:
 	}
 err_ipp_dst_buff_close:
 	/* Close destination buffer */
-	munmap(usr_addr2[0], mmap2[0].size);
+	munmap(usr_addr2[0], gem2[0].size);
 	memset(&args, 0x00, sizeof(struct drm_gem_close));
 	args.handle = gem2[0].handle;
 	exynos_gem_close(dev->fd, &args);
@@ -950,7 +949,7 @@ err_ipp_dst_buff_close:
 err_ipp_src_buff_close:
 	/* Close source buffer */
 	for (i = 0; i < MAX_BUF; i++) {
-		munmap(usr_addr1[i], mmap1[i].size);
+		munmap(usr_addr1[i], gem1[i].size);
 		memset(&args, 0, sizeof(struct drm_gem_close));
 		args.handle = gem1[i].handle;
 		exynos_gem_close(dev->fd, &args);
