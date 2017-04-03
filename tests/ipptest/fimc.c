@@ -666,7 +666,7 @@ void fimc_m2m_set_mode(struct device *dev, struct connector *c, int count,
 	struct drm_gem_close args;
 	uint32_t handles[4], pitches[4], offsets[4] = {0};
 	unsigned int fb_id_dst;
-	struct kms_bo *bo_src[MAX_BUF], *bo_dst;
+	struct kms_bo *bo_src[MAX_BUF] = { NULL, }, *bo_dst = NULL;
 	struct pipe_arg pipe;
 	int ret, i, j;
 
@@ -940,20 +940,13 @@ err_ipp_quque_close:
 				"failed to ipp ctrl IPP_CMD_M2M stop\n");
 	}
 err_ipp_dst_buff_close:
-	/* Close destination buffer */
-	munmap(usr_addr2[0], gem2[0].size);
-	memset(&args, 0x00, sizeof(struct drm_gem_close));
-	args.handle = gem2[0].handle;
-	exynos_gem_close(dev->fd, &args);
-	kms_bo_destroy(&bo_dst);
+	util_kms_gem_destroy_mmap(&bo_dst);
 err_ipp_src_buff_close:
 	/* Close source buffer */
 	for (i = 0; i < MAX_BUF; i++) {
-		munmap(usr_addr1[i], gem1[i].size);
-		memset(&args, 0, sizeof(struct drm_gem_close));
-		args.handle = gem1[i].handle;
-		exynos_gem_close(dev->fd, &args);
-		kms_bo_destroy(&bo_src[i]);
+		ret = util_kms_gem_destroy_mmap(&bo_src[i]);
+		if (ret < 0)
+			break;
 	}
 }
 

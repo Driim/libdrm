@@ -302,9 +302,22 @@ struct kms_bo *util_kms_gem_create_mmap(struct kms_driver *kms,
 		break;
 	}
 
-	kms_bo_unmap(bo);
-
 	return bo;
+}
+
+int util_kms_gem_destroy_mmap(struct kms_bo **bo)
+{
+	int ret;
+
+	if (!(*bo))
+		return -1;
+	kms_bo_unmap(*bo);
+
+	ret = kms_bo_destroy(bo);
+	if (ret < 0)
+		fprintf(stderr, "failed kms bo destroy: %s\n", strerror(errno));
+
+	return ret;
 }
 
 #define MAKE_RGBA(rgb, r, g, b, a) \
