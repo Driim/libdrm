@@ -42,7 +42,7 @@ int nx_alloc_gem(int drm_fd, int size, int flags)
 	struct nx_drm_gem_create arg = { 0, };
 	int ret;
 
-	arg.size = size;
+	arg.size = (uint64_t)size;
 	arg.flags = flags;
 
 	ret = drmCommandWriteRead(drm_fd, DRM_NX_GEM_CREATE, &arg,
