@@ -350,6 +350,9 @@ void fill_smpte_rgb32(unsigned char *mem, unsigned int width,
 	unsigned int x;
 	unsigned int y;
 
+	if (width < 7)
+		return;
+
 	for (y = 0; y < height * 6 / 9; ++y) {
 		for (x = 0; x < width; ++x)
 			((uint32_t *)mem)[x] = colors_top[x * 7 / width];
