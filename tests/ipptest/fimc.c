@@ -185,9 +185,8 @@ struct resources *get_resources(struct device *dev)
 				strerror(errno));
 			continue;
 		}
-			printf("could not get %s %u properties: %s\n",
-				"drm_connector", obj->connector->connector_id,
-				strerror(errno));
+
+		printf("get drm_connector %u\n", obj->connector->connector_id);
 
 		obj->props_info = malloc(obj->props->count_props *
 					sizeof(*obj->props_info));
