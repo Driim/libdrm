@@ -662,7 +662,6 @@ void fimc_m2m_set_mode(struct device *dev, struct connector *c, int count,
 	struct drm_exynos_ipp_queue_buf qbuf1[MAX_BUF], qbuf2[MAX_BUF];
 	struct drm_exynos_gem_create gem1[MAX_BUF], gem2[MAX_BUF];
 	void *usr_addr1[MAX_BUF], *usr_addr2[MAX_BUF];
-	struct drm_gem_close args;
 	uint32_t handles[4], pitches[4], offsets[4] = {0};
 	unsigned int fb_id_dst;
 	struct kms_bo *bo_src[MAX_BUF] = { NULL, }, *bo_dst = NULL;
@@ -952,7 +951,6 @@ err_ipp_src_buff_close:
 void fimc_wb_set_mode(struct connector *c, int count, int page_flip,
 								long int *usec)
 {
-	struct drm_exynos_pos def_pos = {0, 0, 720, 1280};
 	struct drm_exynos_sz def_sz = {720, 1280};
 	struct drm_exynos_ipp_property property;
 	struct drm_exynos_gem_create gem[MAX_BUF];
