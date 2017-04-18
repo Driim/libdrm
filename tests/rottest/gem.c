@@ -49,8 +49,7 @@ int exynos_gem_create(int fd, struct drm_exynos_gem_create *gem)
 	}
 	ret = ioctl(fd, DRM_IOCTL_EXYNOS_GEM_CREATE, gem);
 	if (ret < 0)
-		fprintf(stderr, "failed to create gem buffer: %s\n",
-								strerror(-ret));
+		fprintf(stderr, "failed to create gem buffer: %d\n", ret);
 	return ret;
 }
 
@@ -65,8 +64,7 @@ int exynos_gem_mmap(int fd, struct exynos_gem_mmap_data *in_mmap)
 
 	ret = ioctl(fd, DRM_IOCTL_MODE_MAP_DUMB, &arg);
 	if (ret) {
-		fprintf(stderr, "failed to map dumb buffer: %s\n",
-				strerror(errno));
+		fprintf(stderr, "failed to map dumb buffer: %d\n", errno);
 		return ret;
 	}
 
@@ -75,8 +73,7 @@ int exynos_gem_mmap(int fd, struct exynos_gem_mmap_data *in_mmap)
 	map = mmap(NULL, (size_t)in_mmap->size, PROT_READ | PROT_WRITE,
 			MAP_SHARED, fd, (off_t)arg.offset);
 	if (map == MAP_FAILED) {
-		fprintf(stderr, "failed to mmap buffer: %s\n",
-				strerror(errno));
+		fprintf(stderr, "failed to mmap buffer: %d\n", errno);
 		return -EFAULT;
 	}
 
@@ -91,6 +88,6 @@ int exynos_gem_close(int fd, struct drm_gem_close *gem_close)
 
 	ret = ioctl(fd, DRM_IOCTL_GEM_CLOSE, gem_close);
 	if (ret < 0)
-		fprintf(stderr, "failed to close: %s\n", strerror(-ret));
+		fprintf(stderr, "failed to close: %d\n", ret);
 	return ret;
 }

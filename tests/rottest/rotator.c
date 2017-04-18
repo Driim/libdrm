@@ -69,8 +69,8 @@ static int exynos_drm_ipp_set_property(int fd,
 	ret = ioctl(fd, DRM_IOCTL_EXYNOS_IPP_SET_PROPERTY, property);
 	if (ret)
 		fprintf(stderr,
-			"failed to DRM_IOCTL_EXYNOS_IPP_SET_PROPERTY : %s\n",
-			strerror(errno));
+			"failed to DRM_IOCTL_EXYNOS_IPP_SET_PROPERTY : %d\n",
+			errno);
 
 	return ret;
 }
@@ -99,8 +99,8 @@ static int exynos_drm_ipp_queue_buf(int fd, int prop_id,
 	if (ret)
 		fprintf(stderr,
 			"failed to DRM_IOCTL_EXYNOS_IPP_QUEUE_BUF[prop_id:%d]"\
-			"[ops_id:%d][buf_id:%d][buf_type:%d] : %s\n",
-			prop_id, ops_id, buf_id, buf_type, strerror(errno));
+			"[ops_id:%d][buf_id:%d][buf_type:%d] : %d\n",
+			prop_id, ops_id, buf_id, buf_type, errno);
  
 	return ret;
 }
@@ -120,7 +120,7 @@ static int exynos_drm_ipp_cmd_ctrl(int fd, int prop_id,
 	if (ret)
 		fprintf(stderr,
 			"failed to DRM_IOCTL_EXYNOS_IPP_CMD_CTRL[prop_id:%d]"\
-			"[ctrl:%d] : %s\n", prop_id, ctrl, strerror(errno));
+			"[ctrl:%d] : %d\n", prop_id, ctrl, errno);
 
 	return ret;
 }
@@ -159,8 +159,7 @@ static int rotator_set_mode_property(struct connector *c, int count,
 	ret = exynos_drm_ipp_set_property(fd, property, &src_pos, &src_sz,
 							&dst_pos, &dst_sz);
 	if (ret)
-		fprintf(stderr, "failed to ipp set property: %s\n",
-							strerror(errno));
+		fprintf(stderr, "failed to ipp set property: %d\n", errno);
 
 	return ret;
 }
@@ -245,8 +244,7 @@ void rotator_1_N_set_mode(struct connector *c, int count, int page_flip,
 	ret = rotator_set_mode_property(c, count, &width, &height, &stride,
 								&property);
 	if (ret) {
-		fprintf(stderr, "failed to set mode property : %s\n",
-							strerror(errno));
+		fprintf(stderr, "failed to set mode property : %d\n", errno);
 		return;
 	}
 
@@ -254,8 +252,7 @@ void rotator_1_N_set_mode(struct connector *c, int count, int page_flip,
 	/* For source buffer */
 	ret = util_gem_create_mmap(fd, &gem1, &mmap1, stride * height);
 	if (ret) {
-		fprintf(stderr, "failed to gem create mmap: %s\n",
-							strerror(errno));
+		fprintf(stderr, "failed to gem create mmap: %d\n", errno);
 		return;
 	}
 	usr_addr1 = mmap1.addr;
@@ -268,8 +265,8 @@ void rotator_1_N_set_mode(struct connector *c, int count, int page_flip,
 		ret = util_gem_create_mmap(fd, &gem2[i], &mmap2[i],
 						stride * height);
 		if (ret) {
-			fprintf(stderr, "failed to gem create mmap: %d : %s\n",
-							i, strerror(errno));
+			fprintf(stderr, "failed to gem create mmap: %d : %d\n",
+				i, errno);
 			goto err_gem_create_mmap;
 		}
 		usr_addr2[i] = mmap2[i].addr;
@@ -435,8 +432,7 @@ void rotator_N_N_set_mode(struct connector *c, int count, int page_flip,
 	ret = rotator_set_mode_property(c, count, &width, &height, &stride,
 								&property);
 	if (ret) {
-		fprintf(stderr, "failed to set mode property : %s\n",
-							strerror(errno));
+		fprintf(stderr, "failed to set mode property : %d\n", errno);
 		return;
 	}
 
@@ -446,8 +442,8 @@ void rotator_N_N_set_mode(struct connector *c, int count, int page_flip,
 		ret = util_gem_create_mmap(fd, &gem1[i], &mmap1[i],
 						stride * height);
 		if (ret) {
-			fprintf(stderr, "failed to gem create mmap: %d : %s\n",
-							i, strerror(errno));
+			fprintf(stderr, "failed to gem create mmap: %d : %d\n",
+				i, errno);
 			goto err_gem_create_mmap;
 		}
 		usr_addr1[i] = mmap1[i].addr;
@@ -459,8 +455,8 @@ void rotator_N_N_set_mode(struct connector *c, int count, int page_flip,
 		ret = util_gem_create_mmap(fd, &gem2[i], &mmap2[i],
 						stride * height);
 		if (ret) {
-			fprintf(stderr, "failed to gem create mmap: %d : %s\n",
-							i, strerror(errno));
+			fprintf(stderr, "failed to gem create mmap: %d : %d\n",
+				i, errno);
 			goto err_gem_create_mmap;
 		}
 		usr_addr2[i] = mmap2[i].addr;

@@ -155,7 +155,7 @@ int util_gem_create_mmap(int fd, struct drm_exynos_gem_create *gem,
 	gem->size = size;
 
 	if (exynos_gem_create(fd, gem) < 0) {
-		fprintf(stderr, "failed to gem create: %s\n", strerror(errno));
+		fprintf(stderr, "failed to gem create: %d\n", errno);
 		return -1;
 	}
 
@@ -165,7 +165,7 @@ int util_gem_create_mmap(int fd, struct drm_exynos_gem_create *gem,
 	mmap->size = gem->size;
 
 	if (exynos_gem_mmap(fd, mmap) < 0) {
-		fprintf(stderr, "failed to gem mmap: %s\n", strerror(errno));
+		fprintf(stderr, "failed to gem mmap: %d\n", errno);
 		return -2;
 	}
 
@@ -204,8 +204,7 @@ struct kms_bo *util_kms_gem_create_mmap(struct kms_driver *kms,
 
 	ret = kms_bo_map(bo, &virtual);
 	if (ret) {
-		fprintf(stderr, "failed to map buffer: %s\n",
-			strerror(-ret));
+		fprintf(stderr, "failed to map buffer: %d\n", ret);
 		kms_bo_destroy(&bo);
 		return NULL;
 	}
@@ -303,7 +302,7 @@ int util_kms_gem_destroy_mmap(struct kms_bo **bo)
 
 	ret = kms_bo_destroy(bo);
 	if (ret < 0)
-		fprintf(stderr, "failed kms bo destroy: %s\n", strerror(errno));
+		fprintf(stderr, "failed kms bo destroy: %d\n", errno);
 
 	return ret;
 }

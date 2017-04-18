@@ -104,8 +104,7 @@ struct resources *get_resources(struct device *dev)
 
 	res->res = drmModeGetResources(dev->fd);
 	if (!res->res) {
-		fprintf(stderr, "drmModeGetResources failed: %s\n",
-			strerror(errno));
+		fprintf(stderr, "drmModeGetResources failed: %d\n", errno);
 		goto error;
 	}
 
@@ -129,9 +128,9 @@ struct resources *get_resources(struct device *dev)
 			(_res)->type##s[i].type =				\
 				drmModeGet##Type(dev->fd, (_res)->__res->type##s[i]); \
 			if (!(_res)->type##s[i].type)				\
-				fprintf(stderr, "could not get %s %i: %s\n",	\
+				fprintf(stderr, "could not get %s %i: %d\n",	\
 					#type, (_res)->__res->type##s[i],	\
-					strerror(errno));			\
+					errno);					\
 		}								\
 	} while (0)
 
@@ -151,9 +150,9 @@ struct resources *get_resources(struct device *dev)
 							   DRM_MODE_OBJECT_##Type); \
 			if (!obj->props) {					\
 				fprintf(stderr,					\
-					"could not get %s %i properties: %s\n", \
+					"could not get %s %i properties: %d\n", \
 					#type, obj->type->type##_id,		\
-					strerror(errno));			\
+					errno);					\
 				continue;					\
 			}							\
 			obj->props_info = malloc(obj->props->count_props *	\
@@ -181,9 +180,9 @@ struct resources *get_resources(struct device *dev)
 				DRM_MODE_OBJECT_CONNECTOR);
 
 		if (!obj->props) {
-			fprintf(stderr, "could not get %s %u properties: %s\n",
+			fprintf(stderr, "could not get %s %u properties: %d\n",
 				"drm_connector", obj->connector->connector_id,
-				strerror(errno));
+				errno);
 			continue;
 		}
 
@@ -204,8 +203,7 @@ struct resources *get_resources(struct device *dev)
 
 	res->plane_res = drmModeGetPlaneResources(dev->fd);
 	if (!res->plane_res) {
-		fprintf(stderr, "drmModeGetPlaneResources failed: %s\n",
-			strerror(errno));
+		fprintf(stderr, "drmModeGetPlaneResources failed: %d\n", errno);
 		return res;
 	}
 
@@ -503,8 +501,8 @@ static int exynos_drm_ipp_set_property(int fd,
 	ret = ioctl(fd, DRM_IOCTL_EXYNOS_IPP_SET_PROPERTY, property);
 	if (ret)
 		fprintf(stderr,
-			"failed to DRM_IOCTL_EXYNOS_IPP_SET_PROPERTY : %s\n",
-			strerror(errno));
+			"failed to DRM_IOCTL_EXYNOS_IPP_SET_PROPERTY : %d\n",
+			errno);
 	
 	printf("DRM_IOCTL_EXYNOS_IPP_SET_PROPERTY : prop_id[%d]\n",
 		property->prop_id);
@@ -537,8 +535,8 @@ static int exynos_drm_ipp_queue_buf(int fd, struct drm_exynos_ipp_queue_buf *qbu
 	ret = ioctl(fd, DRM_IOCTL_EXYNOS_IPP_QUEUE_BUF, qbuf);
 	if (ret)
 		fprintf(stderr,
-		"failed to DRM_IOCTL_EXYNOS_IPP_QUEUE_BUF[id:%d][buf_type:%d] : %s\n",
-		ops_id, buf_type, strerror(errno));
+		"failed to DRM_IOCTL_EXYNOS_IPP_QUEUE_BUF[id:%d][buf_type:%d] : %d\n",
+		ops_id, buf_type, errno);
 
 	return ret;
 }
@@ -557,8 +555,8 @@ static int exynos_drm_ipp_cmd_ctrl(int fd, struct drm_exynos_ipp_cmd_ctrl *cmd_c
 	ret = ioctl(fd, DRM_IOCTL_EXYNOS_IPP_CMD_CTRL, cmd_ctrl);
 	if (ret)
 		fprintf(stderr,
-		"failed to DRM_IOCTL_EXYNOS_IPP_CMD_CTRL[prop_id:%d][ctrl:%d] : %s\n",
-		prop_id, ctrl, strerror(errno));
+		"failed to DRM_IOCTL_EXYNOS_IPP_CMD_CTRL[prop_id:%d][ctrl:%d] : %d\n",
+		prop_id, ctrl, errno);
 
 	return ret;
 }
@@ -829,9 +827,9 @@ void fimc_m2m_set_mode(struct device *dev, struct connector *c, int count,
 				pipe.fourcc, handles, pitches,
 				offsets, &fb_id_dst, 0);
 		if (ret) {
-			fprintf(stderr, "failed to add fb (%ux%u):%s\n",
+			fprintf(stderr, "failed to add fb (%ux%u):%d\n",
 					dev->mode.width, dev->mode.height,
-					strerror(errno));
+					errno);
 			goto err_ipp_quque_close;
 		}
 
@@ -840,8 +838,7 @@ void fimc_m2m_set_mode(struct device *dev, struct connector *c, int count,
 					fb_id_dst, 0, 0, pipe.con_ids,
 					pipe.num_cons, pipe.mode);
 		if (ret) {
-			fprintf(stderr, "failed to set crtc: %s\n",
-							strerror(errno));
+			fprintf(stderr, "failed to set crtc: %d\n", errno);
 			goto err_ipp_quque_close;
 		}
 
@@ -866,8 +863,8 @@ void fimc_m2m_set_mode(struct device *dev, struct connector *c, int count,
 					fb_id_dst, DRM_MODE_PAGE_FLIP_EVENT,
 					&pipe);
 			if (ret) {
-				fprintf(stderr, "failed to page flip: %s\n",
-						strerror(errno));
+				fprintf(stderr, "failed to page flip: %d\n",
+					errno);
 				goto err_ipp_quque_close;
 			}
 
@@ -995,8 +992,8 @@ void fimc_wb_set_mode(struct connector *c, int count, int page_flip,
 	for (i = 0; i < MAX_BUF; i++) {
 		ret = util_gem_create_mmap(fd, &gem[i], &mmap[i], stride * height);
 		if (ret) {
-			fprintf(stderr, "failed to gem create mmap: %s\n",
-								strerror(errno));
+			fprintf(stderr, "failed to gem create mmap: %d\n",
+				errno);
 			if (ret == -1) return;
 			else if (ret == -2) goto err_ipp_ctrl_close;
 		}

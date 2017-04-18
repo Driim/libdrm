@@ -43,7 +43,7 @@ int util_gem_create_mmap(int fd, struct drm_exynos_gem_create *gem,
 	gem->size = size;
 
 	if (exynos_gem_create(fd, gem) < 0) {
-		fprintf(stderr, "failed to gem create: %s\n", strerror(errno));
+		fprintf(stderr, "failed to gem create: %d\n", errno);
 		return -1;
 	}
 
@@ -53,7 +53,7 @@ int util_gem_create_mmap(int fd, struct drm_exynos_gem_create *gem,
 	mmap->size = gem->size;
 
 	if (exynos_gem_mmap(fd, mmap) < 0) {
-		fprintf(stderr, "failed to gem mmap: %s\n", strerror(errno));
+		fprintf(stderr, "failed to gem mmap: %d\n", errno);
 		memset(&args, 0x00, sizeof(struct drm_gem_close));
 		args.handle = gem->handle;
 		exynos_gem_close(fd, &args);

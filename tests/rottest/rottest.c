@@ -121,8 +121,8 @@ static void dump_encoders(void)
 		encoder = drmModeGetEncoder(fd, resources->encoders[i]);
 
 		if (!encoder) {
-			fprintf(stderr, "could not get encoder %i: %s\n",
-				resources->encoders[i], strerror(errno));
+			fprintf(stderr, "could not get encoder %i: %d\n",
+				resources->encoders[i], errno);
 			continue;
 		}
 		printf("%d\t%d\t%s\t0x%08x\t0x%08x\n",
@@ -177,8 +177,8 @@ static void dump_connectors(void)
 		connector = drmModeGetConnector(fd, resources->connectors[i]);
 
 		if (!connector) {
-			fprintf(stderr, "could not get connector %i: %s\n",
-				resources->connectors[i], strerror(errno));
+			fprintf(stderr, "could not get connector %i: %d\n",
+				resources->connectors[i], errno);
 			continue;
 		}
 
@@ -225,8 +225,8 @@ static void dump_crtcs(void)
 		crtc = drmModeGetCrtc(fd, resources->crtcs[i]);
 
 		if (!crtc) {
-			fprintf(stderr, "could not get crtc %i: %s\n",
-				resources->crtcs[i], strerror(errno));
+			fprintf(stderr, "could not get crtc %i: %d\n",
+				resources->crtcs[i], errno);
 			continue;
 		}
 		printf("%d\t%d\t(%d,%d)\t(%dx%d)\n",
@@ -252,8 +252,8 @@ static void dump_framebuffers(void)
 		fb = drmModeGetFB(fd, resources->fbs[i]);
 
 		if (!fb) {
-			fprintf(stderr, "could not get fb %i: %s\n",
-				resources->fbs[i], strerror(errno));
+			fprintf(stderr, "could not get fb %i: %d\n",
+				resources->fbs[i], errno);
 			continue;
 		}
 		printf("%u\t(%ux%u)\t%u\n",
@@ -288,8 +288,8 @@ void connector_find_mode(struct connector *c)
 		connector = drmModeGetConnector(fd, resources->connectors[i]);
 
 		if (!connector) {
-			fprintf(stderr, "could not get connector %i: %s\n",
-				resources->connectors[i], strerror(errno));
+			fprintf(stderr, "could not get connector %i: %d\n",
+				resources->connectors[i], errno);
 			continue;
 		}
 
@@ -337,8 +337,8 @@ void connector_find_mode(struct connector *c)
 		encoder = drmModeGetEncoder(fd, resources->encoders[i]);
 
 		if (!encoder) {
-			fprintf(stderr, "could not get encoder %i: %s\n",
-				resources->encoders[i], strerror(errno));
+			fprintf(stderr, "could not get encoder %i: %d\n",
+				resources->encoders[i], errno);
 			continue;
 		}
 
@@ -438,8 +438,7 @@ int main(int argc, char **argv)
 
 	resources = drmModeGetResources(fd);
 	if (!resources) {
-		fprintf(stderr, "drmModeGetResources failed: %s\n",
-							strerror(errno));
+		fprintf(stderr, "drmModeGetResources failed: %d\n", errno);
 		drmClose(fd);
 		return 1;
 	}
