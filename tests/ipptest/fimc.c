@@ -912,6 +912,8 @@ void fimc_m2m_set_mode(struct device *dev, struct connector *c, int count,
 			gettimeofday(&begin, NULL);
 		}
 		break;
+	case IPP_CMD_M2M_NONE:
+		break;
 	}
 
 err_ipp_quque_close:
