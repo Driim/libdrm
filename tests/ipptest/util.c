@@ -178,7 +178,6 @@ struct kms_bo *util_kms_gem_create_mmap(struct kms_driver *kms,
 			unsigned int pitches[4], unsigned int offsets[4])
 {
 	unsigned int virtual_height;
-	void *planes[3] = { 0, };
 	void *virtual;
 	struct kms_bo *bo;
 	int ret;
@@ -222,8 +221,6 @@ struct kms_bo *util_kms_gem_create_mmap(struct kms_driver *kms,
 		offsets[0] = 0;
 		kms_bo_get_prop(bo, KMS_HANDLE, &handles[0]);
 		kms_bo_get_prop(bo, KMS_PITCH, &pitches[0]);
-
-		planes[0] = virtual;
 		break;
 
 	case DRM_FORMAT_NV12:
@@ -236,9 +233,6 @@ struct kms_bo *util_kms_gem_create_mmap(struct kms_driver *kms,
 		pitches[1] = pitches[0];
 		offsets[1] = pitches[0] * height;
 		kms_bo_get_prop(bo, KMS_HANDLE, &handles[1]);
-
-		planes[0] = virtual;
-		planes[1] = virtual + offsets[1];
 		break;
 
 	case DRM_FORMAT_YUV420:
@@ -252,10 +246,6 @@ struct kms_bo *util_kms_gem_create_mmap(struct kms_driver *kms,
 		pitches[2] = pitches[1];
 		offsets[2] = offsets[1] + pitches[1] * height / 2;
 		kms_bo_get_prop(bo, KMS_HANDLE, &handles[2]);
-
-		planes[0] = virtual;
-		planes[1] = virtual + offsets[1];
-		planes[2] = virtual + offsets[2];
 		break;
 
 	case DRM_FORMAT_ARGB4444:
@@ -297,8 +287,6 @@ struct kms_bo *util_kms_gem_create_mmap(struct kms_driver *kms,
 		offsets[0] = 0;
 		kms_bo_get_prop(bo, KMS_HANDLE, &handles[0]);
 		kms_bo_get_prop(bo, KMS_PITCH, &pitches[0]);
-
-		planes[0] = virtual;
 		break;
 	}
 
