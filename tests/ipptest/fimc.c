@@ -149,7 +149,7 @@ struct resources *get_resources(struct device *dev)
 				continue;					\
 			}							\
 			obj->props_info = malloc(obj->props->count_props *	\
-						 sizeof *obj->props_info);	\
+						 sizeof(*obj->props_info));	\
 			if (!obj->props_info)					\
 				continue;					\
 			for (j = 0; j < obj->props->count_props; ++j)		\
@@ -412,7 +412,7 @@ static int exynos_drm_ipp_set_property(int fd,
 	struct drm_exynos_sz dst_sz = {def_sz->hsize, def_sz->vsize};
 	int ret = 0;
 
-	memset(property, 0x00, sizeof(struct drm_exynos_ipp_property));
+	memset(property, 0x00, sizeof(*property));
 	property->cmd = cmd;
 
 	switch(cmd) {
@@ -512,7 +512,7 @@ static int exynos_drm_ipp_queue_buf(int fd, struct drm_exynos_ipp_queue_buf *qbu
 {
 	int ret = 0;
 
-	memset(qbuf, 0x00, sizeof(struct drm_exynos_ipp_queue_buf));
+	memset(qbuf, 0x00, sizeof(*qbuf));
 
 	qbuf->ops_id = ops_id;
 	qbuf->buf_type = buf_type;
@@ -538,7 +538,7 @@ static int exynos_drm_ipp_cmd_ctrl(int fd, struct drm_exynos_ipp_cmd_ctrl *cmd_c
 {
 	int ret = 0;
 
-	memset(cmd_ctrl, 0x00, sizeof(struct drm_exynos_ipp_cmd_ctrl));
+	memset(cmd_ctrl, 0x00, sizeof(*cmd_ctrl));
 
 	cmd_ctrl->prop_id = prop_id;
 	cmd_ctrl->ctrl = ctrl;
@@ -569,10 +569,10 @@ int fimc_event_handler(struct drm_exynos_ipp_queue_buf *src_qbuf,
 	int src_buf_id, dst_buf_id;
 	static int bmp_idx = 0;
 
-	len = read(fd, buffer, sizeof buffer);
+	len = read(fd, buffer, sizeof(buffer));
 	if (len == 0)
 		return 0;
-	if (len < sizeof *e)
+	if (len < sizeof(*e))
 		return -1;
 
 	i = 0;
@@ -1100,7 +1100,7 @@ err_ipp_ctrl_close:
 
 	for (i = 0; i < MAX_BUF; i++) {
 		munmap(usr_addr[i], mmap[i].size);
-		memset(&args, 0x00, sizeof(struct drm_gem_close));
+		memset(&args, 0x00, sizeof(args));
 		args.handle = gem[i].handle;
 		exynos_gem_close(fd, &args);
 	}
