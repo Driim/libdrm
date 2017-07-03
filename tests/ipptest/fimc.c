@@ -96,11 +96,9 @@ struct resources *get_resources(struct device *dev)
 	struct resources *res;
 	int i;
 
-	res = malloc(sizeof *res);
+	res = calloc(1, sizeof(*res));
 	if (res == 0)
 		return NULL;
-
-	memset(res, 0, sizeof *res);
 
 	res->res = drmModeGetResources(dev->fd);
 	if (!res->res) {
@@ -108,18 +106,13 @@ struct resources *get_resources(struct device *dev)
 		goto error;
 	}
 
-	res->crtcs = malloc(res->res->count_crtcs * sizeof *res->crtcs);
-	res->encoders = malloc(res->res->count_encoders * sizeof *res->encoders);
-	res->connectors = malloc(res->res->count_connectors * sizeof *res->connectors);
-	res->fbs = malloc(res->res->count_fbs * sizeof *res->fbs);
+	res->crtcs = calloc(res->res->count_crtcs, sizeof(*res->crtcs));
+	res->encoders = calloc(res->res->count_encoders, sizeof(*res->encoders));
+	res->connectors = calloc(res->res->count_connectors, sizeof(*res->connectors));
+	res->fbs = calloc(res->res->count_fbs, sizeof(*res->fbs));
 
 	if (!res->crtcs || !res->encoders || !res->connectors || !res->fbs)
 		goto error;
-
-	memset(res->crtcs , 0, res->res->count_crtcs * sizeof *res->crtcs);
-	memset(res->encoders, 0, res->res->count_encoders * sizeof *res->encoders);
-	memset(res->connectors, 0, res->res->count_connectors * sizeof *res->connectors);
-	memset(res->fbs, 0, res->res->count_fbs * sizeof *res->fbs);
 
 #define get_resource(_res, __res, type, Type)					\
 	do {									\
@@ -207,11 +200,9 @@ struct resources *get_resources(struct device *dev)
 		return res;
 	}
 
-	res->planes = malloc(res->plane_res->count_planes * sizeof *res->planes);
+	res->planes = calloc(res->plane_res->count_planes, sizeof(*res->planes));
 	if (!res->planes)
 		goto error;
-
-	memset(res->planes, 0, res->plane_res->count_planes * sizeof *res->planes);
 
 	get_resource(res, plane_res, plane, Plane);
 	get_properties(res, plane_res, plane, PLANE);
@@ -354,7 +345,7 @@ static int pipe_find_crtc_and_mode(struct device *dev, struct pipe_arg *pipe,
 
 	/* Count the number of connectors and allocate them. */
 	pipe->num_cons = 1;
-	pipe->con_ids = malloc(pipe->num_cons * sizeof(*pipe->con_ids));
+	pipe->con_ids = calloc(pipe->num_cons, sizeof(*pipe->con_ids));
 	if (!pipe->con_ids)
 		return -1;
 
