@@ -406,9 +406,9 @@ static int exynos_drm_ipp_set_property(int fd,
 				enum drm_exynos_ipp_cmd_m2m cmd_m2m,
 				enum drm_exynos_degree degree)
 {
-	struct drm_exynos_pos crop_pos = {0, 0, def_sz->hsize, def_sz->vsize};
+	struct drm_exynos_pos crop_pos = {0, 0, 720, 1280};
 	struct drm_exynos_pos scale_pos = {0, 0, def_sz->hsize, def_sz->vsize};
-	struct drm_exynos_sz src_sz = {def_sz->hsize, def_sz->vsize};
+	struct drm_exynos_sz src_sz = { 720, 1280 };
 	struct drm_exynos_sz dst_sz = {def_sz->hsize, def_sz->vsize};
 	int ret = 0;
 
@@ -656,6 +656,7 @@ void fimc_m2m_set_mode(struct device *dev, struct connector *c, int count,
 	struct drm_exynos_ipp_property property;
 	struct drm_exynos_ipp_cmd_ctrl cmd_ctrl;
 	struct drm_exynos_sz def_sz;
+	struct drm_exynos_sz src_sz = { 720, 1280 };
 	struct drm_exynos_ipp_queue_buf qbuf1[MAX_BUF], qbuf2[MAX_BUF];
 	struct drm_exynos_gem_create gem1[MAX_BUF], gem2[MAX_BUF];
 	void *usr_addr1[MAX_BUF], *usr_addr2[MAX_BUF];
@@ -685,7 +686,7 @@ void fimc_m2m_set_mode(struct device *dev, struct connector *c, int count,
 	/* For source buffer */
 	for (i = 0; i < MAX_BUF; i++) {
 		bo_src[i] = util_kms_gem_create_mmap(dev->kms, pipe.fourcc,
-				dev->mode.width, dev->mode.height,
+				src_sz.hsize, src_sz.vsize,
 				handles, pitches, offsets);
 		if (!bo_src[i])
 			goto err_ipp_src_buff_close;
@@ -700,11 +701,10 @@ void fimc_m2m_set_mode(struct device *dev, struct connector *c, int count,
 	 * Display is YUV422 format, file is RGB888 format
 	 */
 	if (display == IPP_CMD_M2M_DISPLAY)
-		util_draw_buffer_yuv(usr_addr1,
-				dev->mode.width, dev->mode.height);
+		util_draw_buffer_yuv(usr_addr1, src_sz.hsize, src_sz.vsize);
 	else
-		fill_smpte_rgb32(usr_addr1[0], dev->mode.width,
-				dev->mode.height, dev->mode.width * 4);
+		fill_smpte_rgb32(usr_addr1[0], src_sz.hsize, src_sz.vsize,
+				src_sz.hsize * 4);
 
 	/*For destination buffer */
 	bo_dst = util_kms_gem_create_mmap(dev->kms, pipe.fourcc,
@@ -774,7 +774,7 @@ void fimc_m2m_set_mode(struct device *dev, struct connector *c, int count,
 		/* For src image write file */
 		sprintf(filename, RESULT_PATH "fimc_m2m_org_src.bmp");
 		util_write_bmp(filename, usr_addr1[0],
-				dev->mode.width, dev->mode.height);
+				src_sz.hsize, src_sz.vsize);
 
 		j = 0;
 		while (1) {
