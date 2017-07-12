@@ -433,10 +433,17 @@ static int exynos_drm_ipp_set_property(int fd,
 		property->config[EXYNOS_DRM_OPS_DST].flip = EXYNOS_DRM_FLIP_NONE;
 		property->config[EXYNOS_DRM_OPS_DST].degree = degree;
 		property->config[EXYNOS_DRM_OPS_DST].fmt = DRM_FORMAT_XRGB8888;
-		if (property->config[EXYNOS_DRM_OPS_DST].degree ==
+
+		/*
+		 * Since dst_sz is related to the size of the whole image,
+		 * should not swap the width and height when outputting to
+		 * the display.
+		 */
+		if (cmd_m2m == IPP_CMD_M2M_FILE &&
+				(property->config[EXYNOS_DRM_OPS_DST].degree ==
 				EXYNOS_DRM_DEGREE_90 ||
 				property->config[EXYNOS_DRM_OPS_DST].degree ==
-				EXYNOS_DRM_DEGREE_270) {
+				EXYNOS_DRM_DEGREE_270)) {
 			dst_sz.hsize = def_sz->vsize;
 			dst_sz.vsize = def_sz->hsize;
 
