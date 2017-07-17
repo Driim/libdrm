@@ -407,12 +407,29 @@ void util_draw_buffer_yuv(void **addr, unsigned int width, unsigned int height)
 	unsigned char *y, *u, *v, *u422, *v422;
 
 	img_ptr = malloc(width * height * 4);
+	if (!img_ptr)
+		return;
+
 	y = malloc(width * height);
+	if (!y)
+		goto err_free_img;
+
 	u = malloc(width * height);
+	if (!u)
+		goto err_free_y;
+
 	v = malloc(width * height);
+	if (!v)
+		goto err_free_u;
 
 	u422 = malloc(width * (height / 2));
+	if (!u422)
+		goto err_free_v;
+
 	v422 = malloc(width * (height / 2));
+	if (!v422)
+		goto err_free_u422;
+
 
 	/* Get RGB fmt Image */
 	fill_smpte_rgb32(img_ptr, width, height, width * 4);
@@ -447,7 +464,17 @@ void util_draw_buffer_yuv(void **addr, unsigned int width, unsigned int height)
 	memcpy(addr[EXYNOS_DRM_PLANAR_CB], u422, width * (height / 2));
 	memcpy(addr[EXYNOS_DRM_PLANAR_CR], v422, width * (height / 2));
 
-	free(img_ptr); free(y); free(u); free(v); free(u422); free(v422);
+	free(v422);
+err_free_u422:
+	free(u422);
+err_free_v:
+	free(v);
+err_free_u:
+	free(u);
+err_free_y:
+	free(y);
+err_free_img:
+	free(img_ptr);
 }
 
 int util_write_bmp(const char *file, const void *data, unsigned int width,
