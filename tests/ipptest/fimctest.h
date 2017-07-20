@@ -19,6 +19,7 @@ struct connector {
 	int crtc;
 	unsigned int fb_id[2], current_fb_id;
 	struct timeval start;
+	struct drm_exynos_sz src_sz;
 
 	int swap_count;
 };

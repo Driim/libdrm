@@ -370,7 +370,9 @@ static void usage(char *name)
 	fprintf(stderr, "\t-D\ttest M2M Display Mode\n");
 	fprintf(stderr, "\t-d\tlist of degree operation : 0: 0, 1: 90, 2, 180, 3, 270\n");
 	fprintf(stderr, "\t-s <connector_id>:<mode>\tset a mode\n");
+	fprintf(stderr, "\t-s <connector_id>#<src_resolution>:<mode>\tset a mode\n");
 	fprintf(stderr, "\t-s <connector_id>@<crtc_id>:<mode>\tset a mode\n");
+	fprintf(stderr, "\t-s <connector_id>@<crtc_id>#<src_resolution>:<mode>\tset a mode\n");
 	fprintf(stderr, "\n\tDefault is to dump all info.\n");
 	exit(0);
 }
@@ -418,13 +420,26 @@ int main(int argc, char **argv)
 			break;
 		case 's':
 			con_args[count].crtc = -1;
+			con_args[count].src_sz.hsize = 720;
+			con_args[count].src_sz.vsize = 1280;
 			if (sscanf(optarg, "%d:%64s",
 				   &con_args[count].id,
 				   con_args[count].mode_str) != 2 &&
+			    sscanf(optarg, "%d#%ux%u:%64s",
+				   &con_args[count].id,
+				   &con_args[count].src_sz.hsize,
+				   &con_args[count].src_sz.vsize,
+				   con_args[count].mode_str) != 4 &&
 			    sscanf(optarg, "%d@%d:%64s",
 				   &con_args[count].id,
 				   &con_args[count].crtc,
-				   con_args[count].mode_str) != 3)
+				   con_args[count].mode_str) != 3 &&
+			    sscanf(optarg, "%d@%d#%ux%u:%64s",
+				   &con_args[count].id,
+				   &con_args[count].crtc,
+				   &con_args[count].src_sz.hsize,
+				   &con_args[count].src_sz.vsize,
+				   con_args[count].mode_str) != 5)
 				usage(argv[0]);
 			count++;
 			break;

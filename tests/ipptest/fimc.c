@@ -399,16 +399,52 @@ static int pipe_find_crtc_and_mode(struct device *dev, struct pipe_arg *pipe,
 	return 0;
 }
 
+static void exynos_drm_ipp_get_property(int fd)
+{
+	struct drm_exynos_ipp_prop_list prop_list = { 0, };
+	int prop_list_num;
+	int ret;
+	int i;
+
+	ret = ioctl(fd, DRM_IOCTL_EXYNOS_IPP_GET_PROPERTY, &prop_list);
+	if (ret)
+		goto err_get_property;
+
+	prop_list_num = prop_list.count;
+	for (i = 1; i <= prop_list_num; i++) {
+		prop_list.ipp_id = i;
+
+		ret = ioctl(fd, DRM_IOCTL_EXYNOS_IPP_GET_PROPERTY, &prop_list);
+		if (ret)
+			goto err_get_property;
+
+		printf("DRM_IOCTL_EXYNOS_IPP_GET_PROPERTY: ipp_id[%u]\n",
+			prop_list.ipp_id);
+		printf("DRM_IOCTL_EXYNOS_IPP_GET_PROPERTY: crop_min[%u:%u]\n",
+			prop_list.crop_min.hsize, prop_list.crop_min.vsize);
+		printf("DRM_IOCTL_EXYNOS_IPP_GET_PROPERTY: crop_max[%u:%u]\n",
+			prop_list.crop_max.hsize, prop_list.crop_max.vsize);
+		printf("DRM_IOCTL_EXYNOS_IPP_GET_PROPERTY:  rot_max[%u:%u]\n",
+			prop_list.rot_max.hsize, prop_list.rot_max.vsize);
+	}
+
+	return;
+
+err_get_property:
+	fprintf(stderr,
+		"failed to DRM_IOCTL_EXYNOS_IPP_GET_PROPERTY : %d\n", errno);
+}
+
 static int exynos_drm_ipp_set_property(int fd,
 				struct drm_exynos_ipp_property *property,
+				struct drm_exynos_sz *src_sz,
 				struct drm_exynos_sz *def_sz,
 				enum drm_exynos_ipp_cmd cmd,
 				enum drm_exynos_ipp_cmd_m2m cmd_m2m,
 				enum drm_exynos_degree degree)
 {
-	struct drm_exynos_pos crop_pos = {0, 0, 720, 1280};
+	struct drm_exynos_pos crop_pos = {0, 0, src_sz->hsize, src_sz->vsize};
 	struct drm_exynos_pos scale_pos = {0, 0, def_sz->hsize, def_sz->vsize};
-	struct drm_exynos_sz src_sz = { 720, 1280 };
 	struct drm_exynos_sz dst_sz = {def_sz->hsize, def_sz->vsize};
 	int ret = 0;
 
@@ -427,7 +463,7 @@ static int exynos_drm_ipp_set_property(int fd,
 			property->config[EXYNOS_DRM_OPS_SRC].fmt =
 							DRM_FORMAT_YUV422;
 		property->config[EXYNOS_DRM_OPS_SRC].pos = crop_pos;
-		property->config[EXYNOS_DRM_OPS_SRC].sz = src_sz;
+		property->config[EXYNOS_DRM_OPS_SRC].sz = *src_sz;
 
 		property->config[EXYNOS_DRM_OPS_DST].ops_id = EXYNOS_DRM_OPS_DST;
 		property->config[EXYNOS_DRM_OPS_DST].flip = EXYNOS_DRM_FLIP_NONE;
@@ -463,14 +499,14 @@ static int exynos_drm_ipp_set_property(int fd,
 				EXYNOS_DRM_DEGREE_90 ||
 				property->config[EXYNOS_DRM_OPS_SRC].degree ==
 				EXYNOS_DRM_DEGREE_270) {
-			src_sz.hsize = def_sz->vsize;
-			src_sz.vsize = def_sz->hsize;
+			src_sz->hsize = def_sz->vsize;
+			src_sz->vsize = def_sz->hsize;
 
 			crop_pos.w = def_sz->vsize;
 			crop_pos.h = def_sz->hsize;
 		}
 		property->config[EXYNOS_DRM_OPS_SRC].pos = crop_pos;
-		property->config[EXYNOS_DRM_OPS_SRC].sz = src_sz;
+		property->config[EXYNOS_DRM_OPS_SRC].sz = *src_sz;
 
 		property->config[EXYNOS_DRM_OPS_DST].ops_id = EXYNOS_DRM_OPS_DST;
 		property->config[EXYNOS_DRM_OPS_DST].flip = EXYNOS_DRM_FLIP_NONE;
@@ -497,11 +533,15 @@ static int exynos_drm_ipp_set_property(int fd,
 	}
 
 	ret = ioctl(fd, DRM_IOCTL_EXYNOS_IPP_SET_PROPERTY, property);
-	if (ret)
+	if (ret) {
 		fprintf(stderr,
 			"failed to DRM_IOCTL_EXYNOS_IPP_SET_PROPERTY : %d\n",
 			errno);
-	
+
+		exynos_drm_ipp_get_property(fd);
+		return ret;
+	}
+
 	printf("DRM_IOCTL_EXYNOS_IPP_SET_PROPERTY : prop_id[%d]\n",
 		property->prop_id);
 
@@ -656,7 +696,7 @@ void fimc_m2m_set_mode(struct device *dev, struct connector *c, int count,
 	struct drm_exynos_ipp_property property;
 	struct drm_exynos_ipp_cmd_ctrl cmd_ctrl;
 	struct drm_exynos_sz def_sz;
-	struct drm_exynos_sz src_sz = { 720, 1280 };
+	struct drm_exynos_sz src_sz;
 	struct drm_exynos_ipp_queue_buf qbuf1[MAX_BUF], qbuf2[MAX_BUF];
 	struct drm_exynos_gem_create gem1[MAX_BUF], gem2[MAX_BUF];
 	void *usr_addr1[MAX_BUF], *usr_addr2[MAX_BUF];
@@ -668,6 +708,9 @@ void fimc_m2m_set_mode(struct device *dev, struct connector *c, int count,
 
 	struct timeval begin, end;
 	char filename[80];
+
+	src_sz = c[0].src_sz;
+	printf("source image resolution [%ux%u]\n", src_sz.hsize, src_sz.vsize);
 
 	dev->mode.width = 0;
 	dev->mode.height = 0;
@@ -724,11 +767,13 @@ void fimc_m2m_set_mode(struct device *dev, struct connector *c, int count,
 	/* For property */
 	if (display == IPP_CMD_M2M_DISPLAY)
 		ret = exynos_drm_ipp_set_property(dev->fd, &property,
-				&def_sz, IPP_CMD_M2M, IPP_CMD_M2M_DISPLAY,
+				&src_sz, &def_sz,
+				IPP_CMD_M2M, IPP_CMD_M2M_DISPLAY,
 				EXYNOS_DRM_DEGREE_0);
 	else
 		ret = exynos_drm_ipp_set_property(dev->fd, &property,
-				&def_sz, IPP_CMD_M2M, IPP_CMD_M2M_FILE, degree);
+				&src_sz, &def_sz,
+				IPP_CMD_M2M, IPP_CMD_M2M_FILE, degree);
 	if (ret) {
 		fprintf(stderr, "failed to ipp property\n");
 		goto err_ipp_dst_buff_close;
@@ -874,13 +919,16 @@ void fimc_m2m_set_mode(struct device *dev, struct connector *c, int count,
 
 			/* For property */
 			if (j == 0) {
-			ret = exynos_drm_ipp_set_property(dev->fd, &property,
-				&def_sz, IPP_CMD_M2M, IPP_CMD_M2M_DISPLAY,
-				degree);
+				ret = exynos_drm_ipp_set_property(dev->fd,
+						&property, &src_sz, &def_sz,
+						IPP_CMD_M2M,
+						IPP_CMD_M2M_DISPLAY, degree);
 			} else {
-			ret = exynos_drm_ipp_set_property(dev->fd, &property,
-				&def_sz, IPP_CMD_M2M, IPP_CMD_M2M_DISPLAY,
-				EXYNOS_DRM_DEGREE_0);
+				ret = exynos_drm_ipp_set_property(dev->fd,
+						&property, &src_sz, &def_sz,
+						IPP_CMD_M2M,
+						IPP_CMD_M2M_DISPLAY,
+						EXYNOS_DRM_DEGREE_0);
 			}
 			if (ret) {
 				fprintf(stderr, "failed to ipp property\n");
@@ -978,7 +1026,7 @@ void fimc_wb_set_mode(struct connector *c, int count, int page_flip,
 	def_sz.vsize = height;
 
 	/* For property */
-	ret = exynos_drm_ipp_set_property(fd, &property, &def_sz,
+	ret = exynos_drm_ipp_set_property(fd, &property, &def_sz, &def_sz,
 				IPP_CMD_WB, IPP_CMD_M2M_NONE, EXYNOS_DRM_DEGREE_0);
 	printf("property: %d\n", ret);
 	if (ret) {
@@ -1059,7 +1107,7 @@ void fimc_wb_set_mode(struct connector *c, int count, int page_flip,
 			}
 
 			/* For property */
-			ret = exynos_drm_ipp_set_property(fd, &property,
+			ret = exynos_drm_ipp_set_property(fd, &property, &def_sz,
 				&def_sz, IPP_CMD_WB, IPP_CMD_M2M_NONE, EXYNOS_DRM_DEGREE_90);
 			if (ret) {
 				fprintf(stderr, "failed to ipp property\n");
