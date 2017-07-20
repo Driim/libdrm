@@ -253,15 +253,13 @@ enum drm_exynos_ipp_dithering {
  * @csc: flag of csc supporting.
  * @crop: flag of crop supporting.
  * @scale: flag of scale supporting.
- * @blending: flag of blending supporting.
- * @dithering: flag of dithering supporting.
- * @colorfill: flag of colorfill supporting.
  * @refresh_min: min hz of refresh.
  * @refresh_max: max hz of refresh.
  * @crop_min: crop min resolution.
  * @crop_max: crop max resolution.
  * @scale_min: scale min resolution.
  * @scale_max: scale max resolution.
+ * @rot_max: rotation max resolution.
  */
 struct drm_exynos_ipp_prop_list {
 	__u32	version;
@@ -273,15 +271,14 @@ struct drm_exynos_ipp_prop_list {
 	__u32	csc;
 	__u32	crop;
 	__u32	scale;
-	__u32	blending;
-	__u32	dithering;
-	__u32	colorfill;
 	__u32	refresh_min;
 	__u32	refresh_max;
+	__u32	reserved;
 	struct drm_exynos_sz	crop_min;
 	struct drm_exynos_sz	crop_max;
 	struct drm_exynos_sz	scale_min;
 	struct drm_exynos_sz	scale_max;
+	struct drm_exynos_sz	rot_max;
 };
 
 /**
