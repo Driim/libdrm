@@ -192,6 +192,12 @@ int vigs_drm_surface_start_access(struct vigs_drm_surface *sfc,
 int vigs_drm_surface_end_access(struct vigs_drm_surface *sfc,
                                 int sync);
 
+int vigs_drm_surface_convert(struct vigs_drm_surface *src,
+                             uint32_t src_format,
+                             struct vigs_drm_surface *dst,
+                             uint32_t dst_format,
+                             int y_invert);
+
 /*
  * @}
  */

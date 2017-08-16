@@ -441,6 +441,27 @@ int vigs_drm_surface_end_access(struct vigs_drm_surface *sfc,
     return (ret != 0) ? -errno : 0;
 }
 
+int vigs_drm_surface_convert(struct vigs_drm_surface *src,
+                             uint32_t src_format,
+                             struct vigs_drm_surface *dst,
+                             uint32_t dst_format,
+                             int y_invert)
+{
+    struct drm_vigs_surface_convert req =
+    {
+        .src_handle = src->gem.handle,
+        .src_format = src_format,
+        .dst_handle = dst->gem.handle,
+        .dst_format = dst_format,
+        .y_invert = y_invert
+    };
+    int ret;
+
+    ret = drmIoctl(dst->gem.dev->fd, DRM_IOCTL_VIGS_SURFACE_CONVERT, &req);
+
+    return (ret != 0) ? -errno : 0;
+}
+
 int vigs_drm_execbuffer_create(struct vigs_drm_device *dev,
                                uint32_t size,
                                struct vigs_drm_execbuffer **execbuffer)

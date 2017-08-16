@@ -122,6 +122,15 @@ struct drm_vigs_surface_end_access
     int sync;
 };
 
+struct drm_vigs_surface_convert
+{
+    uint32_t src_handle;
+    uint32_t src_format;
+    uint32_t dst_handle;
+    uint32_t dst_format;
+    int y_invert;
+};
+
 struct drm_vigs_create_fence
 {
     int send;
@@ -201,6 +210,8 @@ struct drm_vigs_dp_open_surface
 #define DRM_VIGS_DP_CREATE_SURFACE 0x20
 #define DRM_VIGS_DP_OPEN_SURFACE 0x21
 
+#define DRM_VIGS_SURFACE_CONVERT 0x22
+
 #define DRM_IOCTL_VIGS_GET_PROTOCOL_VERSION DRM_IOR(DRM_COMMAND_BASE + \
             DRM_VIGS_GET_PROTOCOL_VERSION, struct drm_vigs_get_protocol_version)
 #define DRM_IOCTL_VIGS_CREATE_SURFACE DRM_IOWR(DRM_COMMAND_BASE + \
@@ -221,6 +232,8 @@ struct drm_vigs_dp_open_surface
             DRM_VIGS_SURFACE_START_ACCESS, struct drm_vigs_surface_start_access)
 #define DRM_IOCTL_VIGS_SURFACE_END_ACCESS DRM_IOW(DRM_COMMAND_BASE + \
             DRM_VIGS_SURFACE_END_ACCESS, struct drm_vigs_surface_end_access)
+#define DRM_IOCTL_VIGS_SURFACE_CONVERT DRM_IOW(DRM_COMMAND_BASE + \
+            DRM_VIGS_SURFACE_CONVERT, struct drm_vigs_surface_convert)
 #define DRM_IOCTL_VIGS_CREATE_FENCE DRM_IOWR(DRM_COMMAND_BASE + \
             DRM_VIGS_CREATE_FENCE, struct drm_vigs_create_fence)
 #define DRM_IOCTL_VIGS_FENCE_WAIT DRM_IOW(DRM_COMMAND_BASE + \
