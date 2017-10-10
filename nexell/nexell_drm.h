@@ -59,6 +59,55 @@ struct nx_drm_gem_info {
 	uint64_t size;
 };
 
+/*
+ * nexell gem memory type
+ */
+enum nx_gem_type {
+	/*
+	 * DMA continuous memory
+	 * user   : non-cacheable
+	 * kernel : non-cacheable
+	 */
+	NEXELL_BO_DMA,
+
+	/*
+	 * DMA continuous memory, allocate from DMA,
+	 * user   : cacheable
+	 * kernel : non-cacheable
+	 */
+	NEXELL_BO_DMA_CACHEABLE,
+
+	/*
+	 * System continuous memory, allocate from system
+	 * user   : non-cacheable
+	 * kernel : non-cacheable
+	 */
+	NEXELL_BO_SYSTEM,
+
+	/*
+	 * System continuous memory, allocate from system
+	 * user   : cacheable
+	 * kernel : cacheable
+	 */
+	NEXELL_BO_SYSTEM_CACHEABLE,
+
+	/*
+	 * System non-continuous memory, allocate from system
+	 * user   : non-cacheable
+	 * kernel : non-cacheable
+	 */
+	NEXELL_BO_SYSTEM_NONCONTIG,
+
+	/*
+	 * System non-continuous memory, allocate from system
+	 * user   : cacheable
+	 * kernel : cacheable
+	 */
+	NEXELL_BO_SYSTEM_NONCONTIG_CACHEABLE,
+
+	NEXELL_BO_MAX,
+};
+
 #define DRM_NX_GEM_CREATE		0x00
 #define DRM_NX_GEM_GET			0x04
 #define DRM_NX_GEM_SYNC			0x05
