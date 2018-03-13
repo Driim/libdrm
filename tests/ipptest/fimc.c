@@ -617,7 +617,7 @@ int fimc_event_handler(struct drm_exynos_ipp_queue_buf *src_qbuf,
 	len = read(fd, buffer, sizeof(buffer));
 	if (len == 0)
 		return 0;
-	if (len < sizeof(*e))
+	if (len < sizeof(*e) || len > 1024)
 		return -1;
 
 	i = 0;

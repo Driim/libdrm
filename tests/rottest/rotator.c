@@ -182,7 +182,7 @@ static int rotator_event_handler(int fd, int idx, int prop_id,
 	len = read(fd, buffer, sizeof(buffer));
 	if (!len)
 		return 0;
-	if (len < sizeof (*e))
+	if (len < sizeof (*e) || len > 1024)
 		return -1;
 
 	i = 0;
