@@ -338,8 +338,8 @@ static int pipe_find_crtc_and_mode(struct device *dev, struct pipe_arg *pipe,
 	drmModeModeInfo *mode = NULL;
 	int i;
 
-	/* init pipe_arg and parse connector by khg */
-	pipe->vrefresh = 0;
+	/* init pipe_arg and parse connector */
+	memset(pipe, 0, sizeof(*pipe));
 	pipe->crtc_id = (uint32_t)-1;
 	strcpy(pipe->format_str, "XR24");
 
@@ -358,8 +358,6 @@ static int pipe_find_crtc_and_mode(struct device *dev, struct pipe_arg *pipe,
 		fprintf(stderr, "unknown format %s\n", pipe->format_str);
 		return -1;
 	}
-
-	pipe->mode = NULL;
 
 	for (i = 0; i < (int)pipe->num_cons; i++) {
 		mode = connector_find_mode_output(dev, pipe->con_ids[i],
