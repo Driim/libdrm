@@ -57,6 +57,8 @@ int util_gem_create_mmap(int fd, struct drm_exynos_gem_create *gem,
 		memset(&args, 0x00, sizeof(struct drm_gem_close));
 		args.handle = gem->handle;
 		exynos_gem_close(fd, &args);
+		mmap->handle = 0;
+		mmap->size = 0;
 		return -2;
 	}
 

@@ -260,6 +260,9 @@ void rotator_1_N_set_mode(struct connector *c, int count, int page_flip,
 	sprintf(filename, RESULT_PATH "rot_src.bmp");
 	util_write_bmp(filename, usr_addr1, width, height);
 
+	for (i = 0; i < MAX_BUF; i++)
+		gem2[i].handle = 0;
+
 	/* For destination buffer */
 	for (i = 0; i < MAX_BUF; i++) {
 		ret = util_gem_create_mmap(fd, &gem2[i], &mmap2[i],
@@ -401,10 +404,12 @@ err_ipp_queue_buf:
 			EXYNOS_DRM_OPS_SRC, IPP_BUF_DEQUEUE, 0, gem1.handle);
 err_gem_create_mmap:
 	for (i = 0; i < MAX_BUF; i++) {
-		munmap(usr_addr2[i], mmap2[i].size);
-		memset(&args, 0x00, sizeof(struct drm_gem_close));
-		args.handle = gem2[i].handle;
-		exynos_gem_close(fd, &args);
+		if (gem2[i].handle) {
+			munmap(usr_addr2[i], mmap2[i].size);
+			memset(&args, 0x00, sizeof(struct drm_gem_close));
+			args.handle = gem2[i].handle;
+			exynos_gem_close(fd, &args);
+		}
 	}
 
 	munmap(usr_addr1, mmap1.size);
@@ -434,6 +439,11 @@ void rotator_N_N_set_mode(struct connector *c, int count, int page_flip,
 	if (ret) {
 		fprintf(stderr, "failed to set mode property : %d\n", errno);
 		return;
+	}
+
+	for (i = 0; i < MAX_BUF; i++) {
+		gem1[i].handle = 0;
+		gem2[i].handle = 0;
 	}
 
 	/* For GEM create / mmap / draw buffer */
@@ -567,16 +577,20 @@ void rotator_N_N_set_mode(struct connector *c, int count, int page_flip,
 	/* For munmap / GEM close */
 	for (i = 0; i < MAX_BUF; i++) {
 		/* For destination buffer */
-		munmap(usr_addr2[i], mmap2[i].size);
-		memset(&args, 0x00, sizeof(struct drm_gem_close));
-		args.handle = gem2[i].handle;
-		exynos_gem_close(fd, &args);
+		if (gem2[i].handle) {
+			munmap(usr_addr2[i], mmap2[i].size);
+			memset(&args, 0x00, sizeof(struct drm_gem_close));
+			args.handle = gem2[i].handle;
+			exynos_gem_close(fd, &args);
+		}
 
 		/* For source buffer */
-		munmap(usr_addr1[i], mmap1[i].size);
-		memset(&args, 0x00, sizeof(struct drm_gem_close));
-		args.handle = gem1[i].handle;
-		exynos_gem_close(fd, &args);
+		if (gem1[i].handle) {
+			munmap(usr_addr1[i], mmap1[i].size);
+			memset(&args, 0x00, sizeof(struct drm_gem_close));
+			args.handle = gem1[i].handle;
+			exynos_gem_close(fd, &args);
+		}
 	}
 
 	return;
