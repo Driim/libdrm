@@ -422,7 +422,8 @@ int main(int argc, char **argv)
 			con_args[count].crtc = -1;
 			con_args[count].src_sz.hsize = 720;
 			con_args[count].src_sz.vsize = 1280;
-			if (sscanf(optarg, "%d:%64s",
+			if (optarg &&
+			    sscanf(optarg, "%d:%64s",
 				   &con_args[count].id,
 				   con_args[count].mode_str) != 2 &&
 			    sscanf(optarg, "%d#%ux%u:%64s",
