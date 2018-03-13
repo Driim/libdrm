@@ -600,7 +600,7 @@ err_gem_create_mmap:
 		args.handle = gem2[i].handle;
 		exynos_gem_close(fd, &args);
 
-		munmap(usr_addr1, mmap1[i].size);
+		munmap(usr_addr1[i], mmap1[i].size);
 		memset(&args, 0x00, sizeof(struct drm_gem_close));
 		args.handle = gem1[i].handle;
 		exynos_gem_close(fd, &args);
