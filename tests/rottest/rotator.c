@@ -577,20 +577,16 @@ void rotator_N_N_set_mode(struct connector *c, int count, int page_flip,
 	/* For munmap / GEM close */
 	for (i = 0; i < MAX_BUF; i++) {
 		/* For destination buffer */
-		if (gem2[i].handle) {
-			munmap(usr_addr2[i], mmap2[i].size);
-			memset(&args, 0x00, sizeof(struct drm_gem_close));
-			args.handle = gem2[i].handle;
-			exynos_gem_close(fd, &args);
-		}
+		munmap(usr_addr2[i], mmap2[i].size);
+		memset(&args, 0x00, sizeof(struct drm_gem_close));
+		args.handle = gem2[i].handle;
+		exynos_gem_close(fd, &args);
 
 		/* For source buffer */
-		if (gem1[i].handle) {
-			munmap(usr_addr1[i], mmap1[i].size);
-			memset(&args, 0x00, sizeof(struct drm_gem_close));
-			args.handle = gem1[i].handle;
-			exynos_gem_close(fd, &args);
-		}
+		munmap(usr_addr1[i], mmap1[i].size);
+		memset(&args, 0x00, sizeof(struct drm_gem_close));
+		args.handle = gem1[i].handle;
+		exynos_gem_close(fd, &args);
 	}
 
 	return;
@@ -609,14 +605,20 @@ err_ipp_queue_buf:
 	}
 err_gem_create_mmap:
 	for (i = 0; i < MAX_BUF; i++) {
-		munmap(usr_addr2[i], mmap2[i].size);
-		memset(&args, 0x00, sizeof(struct drm_gem_close));
-		args.handle = gem2[i].handle;
-		exynos_gem_close(fd, &args);
+		/* For destination buffer */
+		if (gem2[i].handle) {
+			munmap(usr_addr2[i], mmap2[i].size);
+			memset(&args, 0x00, sizeof(struct drm_gem_close));
+			args.handle = gem2[i].handle;
+			exynos_gem_close(fd, &args);
+		}
 
-		munmap(usr_addr1[i], mmap1[i].size);
-		memset(&args, 0x00, sizeof(struct drm_gem_close));
-		args.handle = gem1[i].handle;
-		exynos_gem_close(fd, &args);
+		/* For source buffer */
+		if (gem1[i].handle) {
+			munmap(usr_addr1[i], mmap1[i].size);
+			memset(&args, 0x00, sizeof(struct drm_gem_close));
+			args.handle = gem1[i].handle;
+			exynos_gem_close(fd, &args);
+		}
 	}
 }
