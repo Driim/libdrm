@@ -83,9 +83,13 @@ static void vigs_drm_gem_close(struct vigs_drm_device *dev, uint32_t handle)
     {
         .handle = handle,
     };
+    int ret;
 
     if (handle) {
-        drmIoctl(dev->fd, DRM_IOCTL_GEM_CLOSE, &req);
+        ret = drmIoctl(dev->fd, DRM_IOCTL_GEM_CLOSE, &req);
+        if (ret) {
+            fprintf(stderr, "DRM_IOCTL_GEM_CLOSE %d failed(%d)\n", handle, ret);
+        }
     }
 }
 
@@ -621,6 +625,7 @@ void vigs_drm_fence_unref(struct vigs_drm_fence *fence)
 {
     struct vigs_drm_fence_impl *fence_impl;
     struct drm_vigs_fence_unref req;
+    int ret;
 
     if (!fence) {
         return;
@@ -635,7 +640,9 @@ void vigs_drm_fence_unref(struct vigs_drm_fence *fence)
 
     req.handle = fence->handle;
 
-    drmIoctl(fence->dev->fd, DRM_IOCTL_VIGS_FENCE_UNREF, &req);
+    ret = drmIoctl(fence->dev->fd, DRM_IOCTL_VIGS_FENCE_UNREF, &req);
+    if (ret)
+        fprintf(stderr, "DRM_IOCTL_VIGS_FENCE_UNREF failed(%d)\n", ret);
 
     free(fence_impl);
 }
