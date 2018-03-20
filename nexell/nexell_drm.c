@@ -58,9 +58,12 @@ int nx_alloc_gem(int drm_fd, int size, int flags)
 void nx_free_gem(int drm_fd, int gem)
 {
 	struct drm_gem_close arg = {0, };
+	int ret;
 
 	arg.handle = gem;
-	drmIoctl(drm_fd, DRM_IOCTL_GEM_CLOSE, &arg);
+	ret = drmIoctl(drm_fd, DRM_IOCTL_GEM_CLOSE, &arg);
+	if (ret)
+		perror("DRM_IOCTL_GEM_CLOSE failed\n");
 }
 
 /**
