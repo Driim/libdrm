@@ -187,7 +187,7 @@ static int rotator_event_handler(int fd, int idx, int prop_id,
 
 	i = 0;
 	while (i < len) {
-		e = (struct drm_event *)&buffer[i];
+		e = (struct drm_event *)(buffer + i);
 		switch (e->type) {
 		case DRM_EXYNOS_IPP_EVENT:
 			ipp_event = (struct drm_exynos_ipp_event *)e;

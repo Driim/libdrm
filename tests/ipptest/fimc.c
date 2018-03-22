@@ -622,7 +622,7 @@ int fimc_event_handler(struct drm_exynos_ipp_queue_buf *src_qbuf,
 
 	i = 0;
 	while (i < len) {
-		e = (struct drm_event *) &buffer[i];
+		e = (struct drm_event *)(buffer + i);
 		switch (e->type) {
 		case DRM_EXYNOS_IPP_EVENT:
 			ipp_event = (struct drm_exynos_ipp_event *) e;
