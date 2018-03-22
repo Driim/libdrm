@@ -265,6 +265,11 @@ void rotator_1_N_set_mode(struct connector *c, int count, int page_flip,
 
 	/* For destination buffer */
 	for (i = 0; i < MAX_BUF; i++) {
+		unsigned int rotated_height, rotated_width;
+
+		rotated_height = width;
+		rotated_width = height;
+
 		ret = util_gem_create_mmap(fd, &gem2[i], &mmap2[i],
 						stride * height);
 		if (ret) {
@@ -275,7 +280,8 @@ void rotator_1_N_set_mode(struct connector *c, int count, int page_flip,
 		usr_addr2[i] = mmap2[i].addr;
 		util_draw_buffer(usr_addr2[i], 0, 0, 0, 0, stride * height);
 		sprintf(filename, RESULT_PATH "rot_dst%d.bmp", i);
-		util_write_bmp(filename, usr_addr2[i], height, width);
+		util_write_bmp(filename, usr_addr2[i],
+				rotated_width, rotated_height);
 	}
 
 	/* For IPP queueing */
@@ -316,6 +322,10 @@ void rotator_1_N_set_mode(struct connector *c, int count, int page_flip,
 		while (1) {
 			struct timeval timeout = { .tv_sec = 3, .tv_usec = 0 };
 			fd_set fds;
+			unsigned int rotated_height, rotated_width;
+
+			rotated_height = width;
+			rotated_width = height;
 
 			FD_ZERO(&fds);
 			FD_SET(0, &fds);
@@ -334,8 +344,9 @@ void rotator_1_N_set_mode(struct connector *c, int count, int page_flip,
 
 			ret = rotator_event_handler(fd, i, property.prop_id,
 							&qbuf1, &gem1, qbuf2,
-							gem2, usr_addr2, height,
-							width, &begin);
+							gem2, usr_addr2,
+							rotated_width,
+							rotated_height, &begin);
 			if (ret) {
 				fprintf(stderr,
 					"failed to rotator_event_handler()\n");
@@ -448,6 +459,11 @@ void rotator_N_N_set_mode(struct connector *c, int count, int page_flip,
 
 	/* For GEM create / mmap / draw buffer */
 	for (i = 0; i < MAX_BUF; i++) {
+		unsigned int rotated_height, rotated_width;
+
+		rotated_height = width;
+		rotated_width = height;
+
 		/* For source buffer */
 		ret = util_gem_create_mmap(fd, &gem1[i], &mmap1[i],
 						stride * height);
@@ -472,7 +488,8 @@ void rotator_N_N_set_mode(struct connector *c, int count, int page_flip,
 		usr_addr2[i] = mmap2[i].addr;
 		util_draw_buffer(usr_addr2[i], 0, 0, 0, 0, stride * height);
 		sprintf(filename, RESULT_PATH "rot_dst%d.bmp", i);
-		util_write_bmp(filename, usr_addr2[i], height, width);
+		util_write_bmp(filename, usr_addr2[i],
+				rotated_width, rotated_height);
 	}
 
 	/* For IPP queueing */
@@ -514,6 +531,10 @@ void rotator_N_N_set_mode(struct connector *c, int count, int page_flip,
 		while (1) {
 			struct timeval timeout = { .tv_sec = 3, .tv_usec = 0 };
 			fd_set fds;
+			unsigned int rotated_height, rotated_width;
+
+			rotated_height = width;
+			rotated_width = height;
 
 			FD_ZERO(&fds);
 			FD_SET(0, &fds);
@@ -532,8 +553,9 @@ void rotator_N_N_set_mode(struct connector *c, int count, int page_flip,
 
 			ret = rotator_event_handler(fd, i, property.prop_id,
 							qbuf1, gem1, qbuf2,
-							gem2, usr_addr2, height,
-							width, &begin);
+							gem2, usr_addr2,
+							rotated_width,
+							rotated_height, &begin);
 			if (ret) {
 				fprintf(stderr,
 					"failed to rotator_event_handler()\n");
