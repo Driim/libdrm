@@ -16,7 +16,8 @@ ipptest_SOURCES = \
 	fimctest.c \
 	gem.c \
 	util.c \
-	fimc.c
+	fimc.c \
+	fimc-ipp_v2.c
 
 ipptest_LDADD = \
 	$(top_builddir)/libdrm.la \

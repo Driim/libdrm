@@ -332,7 +332,7 @@ struct crtc *pipe_find_crtc(struct device *dev, struct pipe_arg *pipe)
 	return &dev->resources->crtcs[crtc_idx - 1];
 }
 
-static int pipe_find_crtc_and_mode(struct device *dev, struct pipe_arg *pipe,
+int pipe_find_crtc_and_mode(struct device *dev, struct pipe_arg *pipe,
 							struct connector *c)
 {
 	drmModeModeInfo *mode = NULL;

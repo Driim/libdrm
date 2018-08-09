@@ -383,6 +383,7 @@ static void usage(char *name)
 
 int main(int argc, char **argv)
 {
+	drmVersionPtr drm_version;
 	struct device dev;
 	int c;
 	int operations = 0, encoders = 0, connectors = 0, crtcs = 0, framebuffers = 0;
@@ -391,6 +392,7 @@ int main(int argc, char **argv)
 	int test_vsync = 0;
 	const char *module = "exynos";
 	int i, count = 0;
+	int use_ippv2 = 0;
 	struct connector con_args[2];
 
 	memset(&dev, 0, sizeof(dev));
@@ -470,6 +472,17 @@ int main(int argc, char **argv)
 
 	dev.fd = fd;
 
+	drm_version = drmGetVersion(fd);
+	if (!drm_version) {
+		fprintf(stderr, "no drm version: %m");
+		return -1;
+	} else {
+		if (drm_version->version_major > 1 ||
+			(drm_version->version_major == 1 && drm_version->version_minor >= 1))
+			use_ippv2 = 1;
+		drmFreeVersion(drm_version);
+	}
+
 	dev.resources = get_resources(&dev);
 	if (!dev.resources) {
 		fprintf(stderr, "get_resources failed: %d\n", errno);
@@ -503,15 +516,25 @@ int main(int argc, char **argv)
 				break;
 			}
 
-			fimc_m2m_set_mode(&dev, con_args, count,
-						degree,	display, usec);
+			if (use_ippv2)
+				fimc_v2_m2m_set_mode(&dev, con_args, count,
+							degree,	display, usec);
+			else
+				fimc_m2m_set_mode(&dev, con_args, count,
+							degree,	display, usec);
 			kms_destroy(&dev.kms);
 			break;
 		case 1:
-			fimc_wb_set_mode(con_args, count, test_vsync, usec);
+			if (use_ippv2)
+				fimc_v2_wb_set_mode(con_args, count, test_vsync, usec);
+			else
+				fimc_wb_set_mode(con_args, count, test_vsync, usec);
 			break;
 		case 2:
-			fimc_output_set_mode(con_args, count, test_vsync, usec);
+			if (use_ippv2)
+				fimc_v2_output_set_mode(con_args, count, test_vsync, usec);
+			else
+				fimc_output_set_mode(con_args, count, test_vsync, usec);
 			break;
 		default:
 			break;
