@@ -171,14 +171,12 @@ void fimc_v2_m2m_set_mode(struct device *dev, struct connector *c, int count,
 	/* Display OR File */
 	switch (display) {
 	case IPP_CMD_M2M_FILE:
-
 		/* For src image write file */
 		sprintf(filename, RESULT_PATH "fimc_m2m_org_src.bmp");
 		util_write_bmp(filename, usr_addr1[0],
 				src_sz.hsize, src_sz.vsize);
 
 		for (j = 0; j < MAX_LOOP; j++) {
-
 			gettimeofday(&begin, NULL);
 			ret = ioctl(dev->fd, DRM_IOCTL_EXYNOS_IPP_COMMIT, &arg);
 			if (ret) {
@@ -195,7 +193,6 @@ void fimc_v2_m2m_set_mode(struct device *dev, struct connector *c, int count,
 			util_write_bmp(filename, usr_addr2[0], def_sz.hsize, def_sz.vsize);
 		}
 		break;
-
 	case IPP_CMD_M2M_DISPLAY:
 		/* Add fb2 dst */
 		ret = drmModeAddFB2(dev->fd, dev->mode.width, dev->mode.height,
@@ -209,7 +206,6 @@ void fimc_v2_m2m_set_mode(struct device *dev, struct connector *c, int count,
 		}
 
 		for (j = 0; j < 2; j++) {
-
 			gettimeofday(&begin, NULL);
 			ret = ioctl(dev->fd, DRM_IOCTL_EXYNOS_IPP_COMMIT, &arg);
 			if (ret) {
@@ -234,7 +230,7 @@ void fimc_v2_m2m_set_mode(struct device *dev, struct connector *c, int count,
 			} else {
 				/* Set Flip */
 				ret = drmModePageFlip(dev->fd, pipe.crtc->crtc->crtc_id,
-						fb_id_dst, 0, &pipe);
+						fb_id_dst, DRM_MODE_PAGE_FLIP_EVENT, &pipe);
 				if (ret) {
 					fprintf(stderr, "failed to page flip: %d\n",
 						errno);
