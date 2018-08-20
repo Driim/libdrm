@@ -548,6 +548,8 @@ int main(int argc, char **argv)
 			printf("fimc : result files are in %s\n", RESULT_PATH);
 			printf("avg : [%ld]\n", (i ? sum / i : 0));
 		}
+
+		printf("Please type 'Enter' to continue...\n");
 		getchar();
 	}
 

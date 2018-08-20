@@ -227,6 +227,9 @@ void fimc_v2_m2m_set_mode(struct device *dev, struct connector *c, int count,
 				}
 				/* reset rotation for the next frame */
 				task.transform.rotation = DRM_MODE_ROTATE_0;
+
+				printf("Please type 'Enter' to continue...\n");
+				getchar();
 			} else {
 				/* Set Flip */
 				ret = drmModePageFlip(dev->fd, pipe.crtc->crtc->crtc_id,
@@ -237,8 +240,6 @@ void fimc_v2_m2m_set_mode(struct device *dev, struct connector *c, int count,
 					goto err_ipp_close;
 				}
 			}
-
-			getchar();
 		}
 		break;
 	case IPP_CMD_M2M_NONE:
