@@ -172,7 +172,7 @@ void fimc_v2_m2m_set_mode(struct device *dev, struct connector *c, int count,
 	switch (display) {
 	case IPP_CMD_M2M_FILE:
 		/* For src image write file */
-		sprintf(filename, RESULT_PATH "fimc_m2m_org_src.bmp");
+		snprintf(filename, sizeof(filename), RESULT_PATH "fimc_m2m_org_src.bmp");
 		util_write_bmp(filename, usr_addr1[0],
 				src_sz.hsize, src_sz.vsize);
 
@@ -189,7 +189,7 @@ void fimc_v2_m2m_set_mode(struct device *dev, struct connector *c, int count,
 			usec[j] = (end.tv_sec - begin.tv_sec) * 1000000 +
 					(end.tv_usec - begin.tv_usec);
 
-			sprintf(filename, RESULT_PATH "fimc_m2m_dst%d.bmp", j);
+			snprintf(filename, sizeof(filename), RESULT_PATH "fimc_m2m_dst%d.bmp", j);
 			util_write_bmp(filename, usr_addr2[0], def_sz.hsize, def_sz.vsize);
 		}
 		break;
