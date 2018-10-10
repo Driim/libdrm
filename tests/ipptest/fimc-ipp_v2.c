@@ -158,7 +158,7 @@ void fimc_v2_m2m_set_mode(struct device *dev, struct connector *c, int count,
 		task.transform.rotation = DRM_MODE_ROTATE_270;
 	else {
 		fprintf(stderr, "invalid rotation value\n");
-		goto err_ipp_close;
+		goto err_ipp_dst_buff_close;
 	}
 
 	/* prepare ioctl data */
@@ -181,7 +181,7 @@ void fimc_v2_m2m_set_mode(struct device *dev, struct connector *c, int count,
 			ret = ioctl(dev->fd, DRM_IOCTL_EXYNOS_IPP_COMMIT, &arg);
 			if (ret) {
 				fprintf(stderr, "failed to process image\n");
-				goto err_ipp_close;
+				goto err_ipp_dst_buff_close;
 			}
 
 			gettimeofday(&end, NULL);
@@ -202,7 +202,7 @@ void fimc_v2_m2m_set_mode(struct device *dev, struct connector *c, int count,
 			fprintf(stderr, "failed to add fb (%ux%u):%d\n",
 					dev->mode.width, dev->mode.height,
 					errno);
-			goto err_ipp_close;
+			goto err_ipp_dst_buff_close;
 		}
 
 		for (j = 0; j < 2; j++) {
@@ -210,7 +210,7 @@ void fimc_v2_m2m_set_mode(struct device *dev, struct connector *c, int count,
 			ret = ioctl(dev->fd, DRM_IOCTL_EXYNOS_IPP_COMMIT, &arg);
 			if (ret) {
 				fprintf(stderr, "failed to process image\n");
-				goto err_ipp_close;
+				goto err_ipp_dst_buff_close;
 			}
 			gettimeofday(&end, NULL);
 			usec[j] = (end.tv_sec - begin.tv_sec) * 1000000 +
@@ -223,7 +223,7 @@ void fimc_v2_m2m_set_mode(struct device *dev, struct connector *c, int count,
 					pipe.num_cons, pipe.mode);
 				if (ret) {
 					fprintf(stderr, "failed to set crtc: %d\n", errno);
-					goto err_ipp_close;
+					goto err_ipp_dst_buff_close;
 				}
 				/* reset rotation for the next frame */
 				task.transform.rotation = DRM_MODE_ROTATE_0;
@@ -237,7 +237,7 @@ void fimc_v2_m2m_set_mode(struct device *dev, struct connector *c, int count,
 				if (ret) {
 					fprintf(stderr, "failed to page flip: %d\n",
 						errno);
-					goto err_ipp_close;
+					goto err_ipp_dst_buff_close;
 				}
 			}
 		}
@@ -246,7 +246,6 @@ void fimc_v2_m2m_set_mode(struct device *dev, struct connector *c, int count,
 		break;
 	}
 
-err_ipp_close:
 err_ipp_dst_buff_close:
 	util_kms_gem_destroy_mmap(&bo_dst);
 err_ipp_src_buff_close:
