@@ -23,13 +23,6 @@ Provides:       libdrm = %version-%release
 %description tools
 Diagnoistic tools to run a test for DRI and DRM
 
-%package tools-exynos
-Summary:	Diagnostic utilities for exynos
-Group:          Graphics & UI Framework/Utilities
-
-%description tools-exynos
-Diagnoistic tools to run a test for exynos
-
 %package devel
 Summary:        Userspace interface to kernel DRM services
 Requires:       kernel-headers
@@ -69,7 +62,7 @@ cp %{SOURCE1001} .
         --disable-amdgpu \
         --disable-nouveau \
         --disable-freedreno \
-        --enable-exynos-experimental-api \
+        --enable-etnaviv-experimental-api \
         --enable-nexell \
         --enable-install-test-programs \
         --disable-cairo-tests
@@ -95,7 +88,7 @@ cp %{SOURCE1001} .
 %manifest %{name}.manifest
 %license COPYING
 %{_libdir}/libdrm.so.*
-%{_libdir}/libdrm_exynos.so.*
+%{_libdir}/libdrm_etnaviv.*
 %{_libdir}/libdrm_vigs.so.*
 %{_libdir}/libdrm_nexell.so.*
 
@@ -109,14 +102,9 @@ cp %{SOURCE1001} .
 %{_bindir}/modetest
 %{_bindir}/proptest
 %{_bindir}/vbltest
-
-%files tools-exynos
-%manifest %{name}.manifest
-%{_bindir}/exynos_fimg2d_event
-%{_bindir}/exynos_fimg2d_perf
-%{_bindir}/exynos_fimg2d_test
-%{_bindir}/ipptest
-%{_bindir}/rottest
+%{_bindir}/etnaviv_2d_test
+%{_bindir}/etnaviv_bo_cache_test
+%{_bindir}/etnaviv_cmd_stream_test
 
 %files devel
 %manifest %{name}.manifest
@@ -124,8 +112,6 @@ cp %{SOURCE1001} .
 %{_includedir}/libdrm/*.h
 %dir %{_includedir}/libkms
 %{_includedir}/libkms/*.h
-%dir %{_includedir}/exynos
-%{_includedir}/exynos/*.h
 %dir %{_includedir}/nexell
 %{_includedir}/nexell/*.h
 %{_includedir}/*.h
@@ -134,7 +120,7 @@ cp %{SOURCE1001} .
 %{_libdir}/libdrm_intel.so
 %endif
 %{_libdir}/libkms.so
-%{_libdir}/libdrm_exynos.so
+%{_libdir}/libdrm_etnaviv.so
 %{_libdir}/libdrm_nexell.so
 %{_libdir}/libdrm_vigs.so
 %{_libdir}/pkgconfig/*
